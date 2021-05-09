@@ -14,7 +14,6 @@ public class TrafficNode {
     Map<String, TrafficUser> trafficUserMap;
     String uuid;
 
-
     public TrafficNode() {
         this.trafficNeighborNodeMap = new HashMap<>();
         this.uuid = UUID.randomUUID().toString();

@@ -1,5 +1,6 @@
 package ComModule;
 
+import Config.ConfigFile;
 import org.eclipse.paho.client.mqttv3.*;
 
 import java.nio.charset.StandardCharsets;
@@ -11,7 +12,7 @@ public class MqttSend {
 
     public MqttSend(String uuid) {
         try {
-            this.publisher = new MqttClient("tcp://localhost:1883", uuid);
+            this.publisher = new MqttClient(ConfigFile.BROKERADDRESS, uuid);
         } catch (MqttException e) {
             e.printStackTrace();
         }

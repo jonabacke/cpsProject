@@ -11,16 +11,16 @@ public class Middleware implements IMiddlewareInvoke, IMiddlewareRegisterService
     private final int qos;
     private final boolean retain;
 
-    public Middleware(String topic, int qos, boolean retain, UUID uuid) {
+    public Middleware(String topic, int qos, boolean retain, String uuid) {
         this.topic = topic;
         this.qos = qos;
         this.retain = retain;
-        this.mqtt = new MqttSend(uuid.toString());
+        this.mqtt = new MqttSend(uuid);
     }
 
     @Override
-    public void register(UUID uuid, String serviceName, IMiddlewareCallableStub stub, boolean retain, int qos) {
-        new MqttReceive().init(uuid.toString(), new Service(serviceName, qos, retain), stub);
+    public void register(String uuid, String serviceName, IMiddlewareCallableStub stub, boolean retain, int qos) {
+        new MqttReceive().init(uuid, new Service(serviceName, qos, retain), stub);
     }
 
     @Override

@@ -3,13 +3,13 @@ package TrafficNode;
 import ComModule.Middleware;
 import TrafficUser.ITrafficUser;
 
-public class TrafficLightInvokeStub implements ITrafficNodeInvoke {
+public class TrafficNodeInvokeStub implements ITrafficNodeInvoke {
 
     private final Middleware middleware;
     private String oldTargetName;
     private TrafficNodeClientStub service;
 
-    public TrafficLightInvokeStub(Middleware middleware) {
+    public TrafficNodeInvokeStub(Middleware middleware) {
         this.middleware = middleware;
     }
 

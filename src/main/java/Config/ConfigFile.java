@@ -12,5 +12,6 @@ public class ConfigFile {
     public final static String RECEIVE_PUBLISH_INFORMATION = "receivePublishedInformation";
     public final static int AMOUNT_WORKER = 3;
     public final static boolean LOG = false;
+    public final static String BROKERADDRESS = "tcp://localhost:1883";
 
 }

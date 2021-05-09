@@ -26,7 +26,7 @@ public class MqttReceive {
         this.retain = service.isRetain();
         this.topic = service.getServiceName();
         try {
-            this.publisher = new MqttClient("tcp://localhost:1883", uuid);
+            this.publisher = new MqttClient(ConfigFile.BROKERADDRESS, uuid);
         } catch (MqttException e) {
             e.printStackTrace();
         }

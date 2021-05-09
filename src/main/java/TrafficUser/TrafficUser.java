@@ -7,13 +7,13 @@ import java.util.UUID;
 public class TrafficUser implements ITrafficUser {
 
     private double tempo;
-    private EPriority priority;
+    private final EPriority priority;
     private final String uuid;
     private String nextDestination;
     private String finalDestination;
 
     public static void main(String[] args) {
-        TrafficUser trafficUser = new TrafficUser(EPriority.NORMAl, "");
+        TrafficUser trafficUser = new TrafficUser(EPriority.NORMAL, "");
     }
 
     public TrafficUser(EPriority priority, String finalDestination) {
@@ -44,10 +44,6 @@ public class TrafficUser implements ITrafficUser {
 
     @Override
     public void setTempo(double tempo) {
-        if (tempo > Double.MAX_VALUE || tempo < Double.MIN_VALUE) {
-            throw new IllegalArgumentException();
-        }
-
         this.tempo = tempo;
     }
 

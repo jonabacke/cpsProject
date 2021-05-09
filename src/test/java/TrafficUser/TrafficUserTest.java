@@ -28,11 +28,11 @@ class TrafficUserTest {
     void getNetworkString() {
         String networkString = this.trafficUser.getNetworkString();
         TrafficUser trafficUserTest = new TrafficUser(networkString);
-        assertTrue(this.trafficUser.getUuid().equals(trafficUserTest.getUuid()));
-        assertTrue(this.trafficUser.getTempo() == (trafficUserTest.getTempo()));
-        assertTrue(this.trafficUser.getFinalDestination().equals(trafficUserTest.getFinalDestination()));
-        assertTrue(this.trafficUser.getNextDestination().equals(trafficUserTest.getNextDestination()));
-        assertTrue(this.trafficUser.getPriority().equals(trafficUserTest.getPriority()));
+        assertEquals(this.trafficUser.getUuid(), trafficUserTest.getUuid());
+        assertEquals(this.trafficUser.getTempo(), (trafficUserTest.getTempo()));
+        assertEquals(this.trafficUser.getFinalDestination(), trafficUserTest.getFinalDestination());
+        assertEquals(this.trafficUser.getNextDestination(), trafficUserTest.getNextDestination());
+        assertEquals(this.trafficUser.getPriority(), trafficUserTest.getPriority());
     }
 
     @org.junit.jupiter.api.Test
