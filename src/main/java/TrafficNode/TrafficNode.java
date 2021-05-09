@@ -2,6 +2,7 @@ package TrafficNode;
 
 import Config.ConfigFile;
 import TrafficUser.ITrafficUser;
+import TrafficUser.TrafficUser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.UUID;
 public class TrafficNode {
 
     Map<String, TrafficNode> trafficNeighborNodeMap;
-    Map<String, ITrafficUser> trafficUserMap;
+    Map<String, TrafficUser> trafficUserMap;
     String uuid;
 
 
@@ -43,8 +44,8 @@ public class TrafficNode {
     }
 
 
-    public void registerTrafficUser(ITrafficUser trafficUser) {
-        this.trafficUserMap.put(trafficUser.getUUID(), trafficUser);
+    public void registerTrafficUser(TrafficUser trafficUser) {
+        this.trafficUserMap.put(trafficUser.getUuid(), trafficUser);
     }
 
 
