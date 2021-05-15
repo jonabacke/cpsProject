@@ -83,6 +83,8 @@ public class Marshaller {
             if (type.equalsIgnoreCase(paramType) || type.equalsIgnoreCase("int")) {
                 if (parameters[i].getType().isAssignableFrom(Integer.class) || parameters[i].getType().getName().equalsIgnoreCase("int")) {
                     arguments[i] = Integer.parseInt(paramValue);
+                } else if (parameters[i].getType().isAssignableFrom(Double.class) || parameters[i].getType().getName().equalsIgnoreCase("double")) {
+                    arguments[i] = Double.parseDouble(paramValue);
                 } else {
                     arguments[i] = parameters[i].getType().cast(paramValue);
                 }

@@ -3,7 +3,7 @@ package TrafficUser;
 import ComModule.IMiddlewareInvoke;
 import TrafficNode.ITrafficNode;
 
-public class TrafficUserClientStub {
+public class TrafficUserClientStub implements ITrafficUser {
 
     private final IMiddlewareInvoke middlewareInvoke;
     private final String name;
@@ -19,13 +19,40 @@ public class TrafficUserClientStub {
         this.name = ITrafficNode.class.getName();
     }
 
+    @Override
+    public void setTempo(double tempo) {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), tempo);
+    }
 
-    public void registerTrafficUser(String trafficUserUUID) {
-        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), trafficUserUUID);
+    @Override
+    public void buildEmergencyCorridor() {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName());
+    }
+
+    @Override
+    public void setNextTrafficNode(String trafficNodeUUID) {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), trafficNodeUUID);
+    }
+
+    @Override
+    public void getTempo() {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName());
+    }
+
+    @Override
+    public void getPriority() {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName());
+    }
+
+    @Override
+    public void getNextTrafficNode() {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName());
+    }
+
+    @Override
+    public void getFinalTrafficNode() {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName());
     }
 
 
-    public void deleteTrafficUser(String trafficUserUUID) {
-        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), trafficUserUUID);
-    }
 }

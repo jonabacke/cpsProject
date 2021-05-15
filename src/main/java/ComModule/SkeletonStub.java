@@ -36,7 +36,7 @@ public class SkeletonStub implements IMiddlewareCallableStub {
         } catch (IllegalArgumentException e) {
             Logger.getGlobal().severe("IllegalArgument" + e.getMessage());
         } catch (InvocationTargetException e) {
-            Logger.getGlobal().severe("InvocationTarget Exception " + e.getMessage() + "\n " + methodName);
+            Logger.getGlobal().severe("InvocationTarget Exception " + e.getCause() + "\n " + methodName);
         }
     }
 }

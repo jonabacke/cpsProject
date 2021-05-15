@@ -1,55 +1,108 @@
 package TrafficNode;
 
-import Config.ConfigFile;
+import TrafficUser.EPriority;
 import TrafficUser.ITrafficUser;
-import TrafficUser.TrafficUser;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-public class TrafficNode {
+public class TrafficNode implements ITrafficNode {
 
-    Map<String, TrafficNode> trafficNeighborNodeMap;
-    Map<String, TrafficUser> trafficUserMap;
+    Set<String> trafficNodes;
+    Map<String, TrafficUserMock> trafficUserMap;
     String uuid;
 
-    public TrafficNode() {
-        this.trafficNeighborNodeMap = new HashMap<>();
-        this.uuid = UUID.randomUUID().toString();
-    }
+    TrafficNodeInvokeStub trafficNodeInvokeStub;
 
-    public TrafficNode(String uuid) {
-        this.trafficNeighborNodeMap = new HashMap<>();
+    public TrafficNode(String uuid, TrafficNodeInvokeStub trafficNodeInvokeStub) {
+        this.trafficNodes = new HashSet<>();
+        this.trafficUserMap = new HashMap<>();
         this.uuid = uuid;
+        this.trafficNodeInvokeStub = trafficNodeInvokeStub;
     }
 
-
-    public void addTrafficNode(TrafficNode trafficNode) {
-        this.trafficNeighborNodeMap.put(trafficNode.uuid, trafficNode);
+    public void init() {
+        this.registerOnNeighborTrafficNodes();
+        this.test();
     }
 
-    public void deleteTrafficNode(String trafficNodeUuid) {
-        this.trafficNeighborNodeMap.remove(trafficNodeUuid);
+    public void test() {
+        new Thread(() -> {
+            while (true) {
+                if (this.trafficNodes.size() > 0 && this.trafficUserMap.size() > 0) {
+                    String [] user = this.trafficUserMap.keySet().toArray(new String[0]);
+                    this.setNextTrafficNodeForUser(this.trafficUserMap.get(user[(int) (Math.random() * user.length)]).getUuid());
+                }
+                try {
+                    Thread.sleep((int) (Math.random() * 10000));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
-
-    public TrafficNode[] getNeighborTrafficNode() {
-        return this.getTrafficNeighborNodeMap().values().toArray(new TrafficNode[0]);
+    @Override
+    public void signInTrafficNode(String trafficNodeUUID) {
+        System.out.println("signIn: " + trafficNodeUUID);
+        if (!this.trafficNodes.contains(trafficNodeUUID)) {
+            this.registerOnNeighborTrafficNodes();
+        }
+        this.trafficNodes.add(trafficNodeUUID);
     }
 
-    public Map<String, TrafficNode> getTrafficNeighborNodeMap() {
-        return trafficNeighborNodeMap;
+    @Override
+    public void signOutTrafficNode(String trafficNodeUUID) {
+        System.out.println("signOut: " + trafficNodeUUID);
+        this.trafficNodes.remove(trafficNodeUUID);
     }
 
-
-    public void registerTrafficUser(TrafficUser trafficUser) {
-        this.trafficUserMap.put(trafficUser.getUuid(), trafficUser);
+    @Override
+    public void signInTrafficUser(String trafficUserNetworkString, String trafficUserUUID) {
+        System.out.println("signIn: " + trafficUserUUID);
+        this.trafficUserMap.put(trafficUserUUID, new TrafficUserMock(trafficUserNetworkString));
     }
 
+    @Override
+    public void signOutTrafficUser(String trafficUserUUID) {
+        System.out.println("signOut: " + trafficUserUUID);
+        this.trafficUserMap.remove(trafficUserUUID);
+    }
 
-    public void deleteTrafficUser(String uuid) {
-        this.trafficUserMap.remove(uuid);
+    @Override
+    public void setTempo(double tempo, String trafficUserUUID) {
+        System.out.println("Tempo: " + tempo);
+        this.trafficUserMap.get(trafficUserUUID).setTempo(tempo);
+    }
+
+    @Override
+    public void setPriority(String priority, String trafficUserUUID) {
+        System.out.println("Priority: " + priority);
+        this.trafficUserMap.get(trafficUserUUID).setPriority(EPriority.valueOf(priority));
+    }
+
+    @Override
+    public void setNextTrafficNode(String nextTrafficNode, String trafficUserUUID) {
+        System.out.println("NextTrafficNode: " + nextTrafficNode);
+        this.trafficUserMap.get(trafficUserUUID).setNextTrafficNode(nextTrafficNode);
+    }
+
+    @Override
+    public void setFinalTrafficNode(String finalTrafficNode, String trafficUserUUID) {
+        System.out.println("FinalTrafficNode: " + finalTrafficNode);
+        this.trafficUserMap.get(trafficUserUUID).setFinalTrafficNode(finalTrafficNode);
+    }
+
+    public String getNextTrafficNode() {
+        String [] nodes = this.trafficNodes.toArray(new String[0]);
+        return nodes[(int) (Math.random() * nodes.length)];
+    }
+
+    public void setNextTrafficNodeForUser(String trafficUserUUID) {
+        this.trafficNodeInvokeStub.setNextTrafficNode(ITrafficUser.class.getName() + "/" + trafficUserUUID, this.getNextTrafficNode());
+    }
+
+    public void registerOnNeighborTrafficNodes() {
+        this.trafficNodeInvokeStub.signInTrafficNode(ITrafficNode.class.getName(), this.uuid);
     }
 
 }

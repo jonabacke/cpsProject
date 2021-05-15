@@ -3,33 +3,71 @@ package TrafficUser;
 import ComModule.Middleware;
 import TrafficNode.TrafficNodeClientStub;
 
-public class TrafficUserInvokeStub implements ITrafficUserInvoke{
+public class TrafficUserInvokeStub implements ITrafficUserInvoke {
 
     private final Middleware middleware;
     private String oldTargetName;
-    private TrafficUserClientStub service;
+    private TrafficNodeClientStub trafficNodeService;
 
     public TrafficUserInvokeStub(Middleware middleware) {
         this.middleware = middleware;
     }
 
     @Override
-    public void registerTrafficUser(String targetName, String trafficUserUUID) {
-        if (this.service == null || !this.oldTargetName.equals(targetName)) {
-            this.service = new TrafficUserClientStub(this.middleware, targetName);
+    public void signInTrafficUser(String targetName, String networkString, String trafficUserUUID) {
+        if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
+            this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
             this.oldTargetName = targetName;
         }
-        this.service.registerTrafficUser(trafficUserUUID);
+        this.trafficNodeService.signInTrafficUser(networkString, trafficUserUUID);
+    }
+
+    @Override
+    public void signOutTrafficUser(String targetName, String trafficUserUUID) {
+        if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
+            this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
+            this.oldTargetName = targetName;
+        }
+        this.trafficNodeService.signOutTrafficUser(trafficUserUUID);
+    }
+
+    @Override
+    public void setTempo(String targetName, double tempo, String trafficUserUUID) {
+        if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
+            this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
+            this.oldTargetName = targetName;
+        }
+        this.trafficNodeService.setTempo(tempo, trafficUserUUID);
 
     }
 
     @Override
-    public void deleteTrafficUser(String targetName, String trafficUserUUID) {
-        if (this.service == null || !this.oldTargetName.equals(targetName)) {
-            this.service = new TrafficUserClientStub(this.middleware, targetName);
+    public void setPriority(String targetName, String priority, String trafficUserUUID) {
+        if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
+            this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
             this.oldTargetName = targetName;
         }
-        this.service.deleteTrafficUser(trafficUserUUID);
+        this.trafficNodeService.setPriority(priority, trafficUserUUID);
+
+    }
+
+    @Override
+    public void setNextTrafficNode(String targetName, String nextTrafficNode, String trafficUserUUID) {
+        if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
+            this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
+            this.oldTargetName = targetName;
+        }
+        this.trafficNodeService.setNextTrafficNode(nextTrafficNode, trafficUserUUID);
+
+    }
+
+    @Override
+    public void setFinalTrafficNode(String targetName, String finalTrafficNode, String trafficUserUUID) {
+        if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
+            this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
+            this.oldTargetName = targetName;
+        }
+        this.trafficNodeService.setFinalTrafficNode(finalTrafficNode, trafficUserUUID);
 
     }
 }

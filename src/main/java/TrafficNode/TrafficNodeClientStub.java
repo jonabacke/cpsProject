@@ -1,9 +1,8 @@
 package TrafficNode;
 
 import ComModule.IMiddlewareInvoke;
-import TrafficUser.ITrafficUser;
 
-public class TrafficNodeClientStub {
+public class TrafficNodeClientStub implements ITrafficNode {
 
     private final IMiddlewareInvoke middlewareInvoke;
     private final String name;
@@ -16,16 +15,47 @@ public class TrafficNodeClientStub {
 
     public TrafficNodeClientStub(IMiddlewareInvoke middleware) {
         this.middlewareInvoke = middleware;
-        this.name = ITrafficNode.class.getName();
+        this.name = TrafficNode.class.getName();
     }
 
-
-    public void addTrafficNode(String trafficNodeUUID) {
+    @Override
+    public void signInTrafficNode(String trafficNodeUUID) {
         middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), trafficNodeUUID);
     }
 
-
-    public void deleteTrafficNode(String trafficNodeUUID) {
+    @Override
+    public void signOutTrafficNode(String trafficNodeUUID) {
         middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), trafficNodeUUID);
+    }
+
+    @Override
+    public void signInTrafficUser(String trafficUserNetworkString, String trafficUserUUID) {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), trafficUserNetworkString, trafficUserUUID);
+
+    }
+
+    @Override
+    public void signOutTrafficUser(String trafficUserUUID) {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), trafficUserUUID);
+    }
+
+    @Override
+    public void setTempo(double tempo, String trafficUserUUID) {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), tempo, trafficUserUUID);
+    }
+
+    @Override
+    public void setPriority(String priority, String trafficUserUUID) {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), priority, trafficUserUUID);
+    }
+
+    @Override
+    public void setNextTrafficNode(String nextTrafficNode, String trafficUserUUID) {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), nextTrafficNode, trafficUserUUID);
+    }
+
+    @Override
+    public void setFinalTrafficNode(String finalTrafficNode, String trafficUserUUID) {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), finalTrafficNode, trafficUserUUID);
     }
 }

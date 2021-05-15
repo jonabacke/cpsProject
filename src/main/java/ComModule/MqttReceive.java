@@ -34,14 +34,17 @@ public class MqttReceive {
         options.setAutomaticReconnect(true);
         options.setCleanSession(true);
         options.setConnectionTimeout(10);
+        options.setMaxInflight(1);
+        System.out.println("listen on: " + this.topic);
         publisher.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable throwable) {
-                logger.severe("Connection Lost: " + throwable.getMessage());
+                logger.severe("Connection Lost: " + throwable.getMessage() + " " + throwable.getCause());
             }
 
             @Override
             public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
+                logger.info("received something");
                 logger.info(new String(mqttMessage.getPayload()));
                 callBack(new String(mqttMessage.getPayload()));
             }
@@ -53,6 +56,11 @@ public class MqttReceive {
         });
         try {
             publisher.connect(options);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+        try {
+            publisher.subscribe(topic);
         } catch (MqttException e) {
             e.printStackTrace();
         }

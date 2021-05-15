@@ -1,34 +1,51 @@
 package TrafficNode;
 
 import ComModule.Middleware;
-import TrafficUser.ITrafficUser;
+import TrafficUser.TrafficUserClientStub;
 
 public class TrafficNodeInvokeStub implements ITrafficNodeInvoke {
 
     private final Middleware middleware;
     private String oldTargetName;
-    private TrafficNodeClientStub service;
+    private TrafficNodeClientStub trafficNodeService;
+    private TrafficUserClientStub trafficUserService;
 
     public TrafficNodeInvokeStub(Middleware middleware) {
         this.middleware = middleware;
     }
 
     @Override
-    public void addTrafficNode(String targetName, String trafficNodeUUID) {
-        if (this.service == null || !this.oldTargetName.equals(targetName)) {
-            this.service = new TrafficNodeClientStub(this.middleware, targetName);
+    public void signInTrafficNode(String targetName, String trafficNodeUUID) {
+        if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
+            this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
             this.oldTargetName = targetName;
         }
-        this.service.addTrafficNode(trafficNodeUUID);
+        this.trafficNodeService.signInTrafficNode(trafficNodeUUID);
     }
 
     @Override
-    public void deleteTrafficNode(String targetName, String trafficNodeUUID) {
-        if (this.service == null || !this.oldTargetName.equals(targetName)) {
-            this.service = new TrafficNodeClientStub(this.middleware, targetName);
+    public void signOutTrafficNode(String targetName, String trafficNodeUUID) {
+        if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
+            this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
             this.oldTargetName = targetName;
         }
-        this.service.deleteTrafficNode(trafficNodeUUID);
-
+        this.trafficNodeService.signOutTrafficNode(trafficNodeUUID);
     }
+
+    public void setNextTrafficNode(String targetName, String trafficUserUUID) {
+        if (this.trafficUserService == null || !this.oldTargetName.equals(targetName)) {
+            this.trafficUserService = new TrafficUserClientStub(this.middleware, targetName);
+            this.oldTargetName = targetName;
+        }
+        this.trafficUserService.setNextTrafficNode(trafficUserUUID);
+    }
+
+    public void buildEmergencyCorridor(String targetName) {
+        if (this.trafficUserService == null || !this.oldTargetName.equals(targetName)) {
+            this.trafficUserService = new TrafficUserClientStub(this.middleware, targetName);
+            this.oldTargetName = targetName;
+        }
+        this.trafficUserService.buildEmergencyCorridor();
+    }
+
 }

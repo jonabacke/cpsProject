@@ -1,6 +1,7 @@
 package TrafficUser;
 
 import Config.ConfigFile;
+import TrafficNode.ITrafficNode;
 
 import java.util.UUID;
 
@@ -9,37 +10,43 @@ public class TrafficUser implements ITrafficUser {
     private double tempo;
     private final EPriority priority;
     private final String uuid;
-    private String nextDestination;
-    private String finalDestination;
+    private String lastTrafficNode;
+    private String nextTrafficNode;
+    private String finalTrafficNode;
+    private TrafficUserInvokeStub trafficUserInvokeStub;
 
-    public static void main(String[] args) {
-        TrafficUser trafficUser = new TrafficUser(EPriority.NORMAL, "");
-    }
 
-    public TrafficUser(EPriority priority, String finalDestination) {
-        this.uuid = UUID.randomUUID().toString();
+    public TrafficUser(EPriority priority, String uuid, TrafficUserInvokeStub trafficUserInvokeStub) {
+        this.uuid = uuid;
         this.priority = priority;
-        this.finalDestination = finalDestination;
+        this.finalTrafficNode = finalTrafficNode;
+        this.trafficUserInvokeStub = trafficUserInvokeStub;
         this.setTempo(0);
         this.calcNextDestination();
+        this.test();
     }
 
-    public TrafficUser(double tempo, EPriority priority, String uuid, String nextDestination, String finalDestination) {
-        this.tempo = tempo;
-        this.priority = priority;
-        this.uuid = uuid;
-        this.nextDestination = nextDestination;
-        this.finalDestination = finalDestination;
+    private void test() {
+        this.nextTrafficNode = "1";
+        this.signIn();
+        new Thread(() -> {
+            while (true) {
+                this.trafficUserInvokeStub.setTempo(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, Math.random() * 100, this.uuid);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
-    public TrafficUser(String networkString) {
-        String [] networkStrings = networkString.split(ConfigFile.SEPARATOR_MESSAGE_REGEX);
-        this.uuid = networkStrings[0];
-        this.tempo = Double.parseDouble(networkStrings[1]);
-        this.priority = EPriority.valueOf(networkStrings[2]);
-        this.nextDestination = networkStrings[3];
-        this.finalDestination = networkStrings[4];
+    public void signIn() {
+        this.trafficUserInvokeStub.signInTrafficUser(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.getNetworkString(), this.uuid);
+    }
 
+    public void signOut() {
+        this.trafficUserInvokeStub.signOutTrafficUser(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid);
     }
 
     @Override
@@ -49,20 +56,20 @@ public class TrafficUser implements ITrafficUser {
 
     @Override
     public void buildEmergencyCorridor() {
-
+        System.out.println("Build Emergency Corridor");
     }
 
     public String getNetworkString() {
         String result = "";
         result += this.uuid;
-        result += ConfigFile.SEPARATOR_MESSAGE_CONCAT;
+        result += ConfigFile.SEPARATOR_NETWORK_CONCAT;
         result += this.tempo;
-        result += ConfigFile.SEPARATOR_MESSAGE_CONCAT;
+        result += ConfigFile.SEPARATOR_NETWORK_CONCAT;
         result += this.priority;
-        result += ConfigFile.SEPARATOR_MESSAGE_CONCAT;
-        result += this.nextDestination;
-        result += ConfigFile.SEPARATOR_MESSAGE_CONCAT;
-        result += this.finalDestination;
+        result += ConfigFile.SEPARATOR_NETWORK_CONCAT;
+        result += this.nextTrafficNode;
+        result += ConfigFile.SEPARATOR_NETWORK_CONCAT;
+        result += this.finalTrafficNode;
         return result;
     }
 
@@ -70,28 +77,33 @@ public class TrafficUser implements ITrafficUser {
         return uuid;
     }
 
-    @Override
-    public void setNextDestination(String nextDestination) {
-        this.nextDestination = nextDestination;
-    }
-
     public void calcNextDestination() {
-        this.nextDestination = finalDestination;
+        this.nextTrafficNode = finalTrafficNode;
     }
 
-    public double getTempo() {
-        return this.tempo;
+    @Override
+    public void getTempo() {
     }
 
-    public EPriority getPriority() {
-        return priority;
+    @Override
+    public void getPriority() {
     }
 
-    public String getFinalDestination() {
-        return finalDestination;
+    @Override
+    public void getFinalTrafficNode() {
     }
 
-    public String getNextDestination() {
-        return nextDestination;
+    @Override
+    public void getNextTrafficNode() {
+    }
+
+    @Override
+    public void setNextTrafficNode(String trafficNodeUUID) {
+        System.out.println("Set new Goal " + trafficNodeUUID);
+        if (!this.nextTrafficNode.equalsIgnoreCase(trafficNodeUUID)) {
+            this.signOut();
+            this.nextTrafficNode = trafficNodeUUID;
+            this.signIn();
+        }
     }
 }

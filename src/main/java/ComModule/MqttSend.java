@@ -20,7 +20,11 @@ public class MqttSend {
         options.setAutomaticReconnect(true);
         options.setCleanSession(true);
         options.setConnectionTimeout(10);
-
+        try {
+            this.publisher.connect(options);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -28,6 +32,7 @@ public class MqttSend {
         MqttMessage msg = new MqttMessage(str.getBytes(StandardCharsets.UTF_8));
         msg.setQos(qos);
         msg.setRetained(retain);
+        System.out.println("publish on: " + topic);
         try {
             this.publisher.publish(topic, msg);
         } catch (MqttException e) {

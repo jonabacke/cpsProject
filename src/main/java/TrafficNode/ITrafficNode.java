@@ -1,23 +1,28 @@
 package TrafficNode;
 
-import TrafficUser.ITrafficUser;
-
 public interface ITrafficNode {
     /**
      * Fügt ein Node hinzu
-     * @param trafficNode, welches hinzugefügt werden soll
+     * @param trafficNodeUUID, welches hinzugefügt werden soll
      */
-    public void addTrafficNode(TrafficNode trafficNode);
+    public void signInTrafficNode(String trafficNodeUUID);
 
     /**
      * entfernt ein Node, dass zb. defekt ist
-     * @param trafficNodeUuid, welches entfernt werden soll
+     * @param trafficNodeUUID, welches entfernt werden soll
      */
-    public void deleteTrafficNode(String trafficNodeUuid);
+    public void signOutTrafficNode(String trafficNodeUUID);
 
 
-    public void registerTrafficUser(ITrafficUser trafficUser);
+    public void signInTrafficUser(String trafficUserNetworkString, String trafficUserUUID);
 
-    public void deleteTrafficUser(String uuid);
+    public void signOutTrafficUser(String trafficUserUUID);
 
+    void setTempo(double tempo, String trafficUserUUID);
+
+    void setPriority(String priority, String trafficUserUUID);
+
+    void setNextTrafficNode(String nextTrafficNode, String trafficUserUUID);
+
+    void setFinalTrafficNode(String finalTrafficNode, String trafficUserUUID);
 }
