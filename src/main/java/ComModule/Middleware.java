@@ -2,7 +2,6 @@ package ComModule;
 
 import Config.ConfigFile;
 
-import java.util.UUID;
 import java.util.logging.Logger;
 
 public class Middleware implements IMiddlewareInvoke, IMiddlewareRegisterService {
@@ -26,7 +25,7 @@ public class Middleware implements IMiddlewareInvoke, IMiddlewareRegisterService
     @Override
     public void invoke(String serviceName, String functionName, Object ...paramValues) {
         String msg = Marshaller.pack(getClassByName(serviceName), functionName, paramValues);
-        logger.info(msg);
+        logger.info(msg + " on " + serviceName);
         this.mqtt.sendMsg(serviceName, msg, this.qos, this.retain);
     }
 

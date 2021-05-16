@@ -8,16 +8,12 @@ import java.util.logging.Logger;
 public class SkeletonStub implements IMiddlewareCallableStub {
 
     private final Object obj;
-    private final String uuid = UUID.randomUUID().toString();
-
-    public String getUUID() {
-        return uuid;
-    }
 
     public SkeletonStub(String serviceName, Object obj, IMiddlewareRegisterService middleware, Boolean retain, Integer qos) {
         this.obj = obj;
 
-        middleware.register(this.uuid, serviceName, this, retain, qos);
+        String uuid = UUID.randomUUID().toString();
+        middleware.register(uuid, serviceName, this, retain, qos);
     }
 
     @Override

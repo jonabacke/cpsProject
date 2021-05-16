@@ -3,9 +3,6 @@ package ComModule;
 import Config.ConfigFile;
 import org.eclipse.paho.client.mqttv3.*;
 
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 public class MqttReceive {
@@ -43,7 +40,7 @@ public class MqttReceive {
             }
 
             @Override
-            public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
+            public void messageArrived(String s, MqttMessage mqttMessage) {
                 logger.info("received something");
                 logger.info(new String(mqttMessage.getPayload()));
                 callBack(new String(mqttMessage.getPayload()));

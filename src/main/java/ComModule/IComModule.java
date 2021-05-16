@@ -2,7 +2,7 @@ package ComModule;
 
 public interface IComModule {
 
-    public void sendMsg(String msg);
+    void sendMsg(String msg);
 
-    public String receiveMsg();
+    String receiveMsg();
 }

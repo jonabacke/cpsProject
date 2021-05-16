@@ -2,17 +2,17 @@ package TrafficUser;
 
 public interface ITrafficUser {
 
-    public void setTempo(double tempo);
+    void setTempo(double tempo);
 
-    public void buildEmergencyCorridor();
+    void buildEmergencyCorridor();
 
-    public void setNextTrafficNode(String trafficNodeUUID);
+    void setNextTrafficNode(String trafficNodeUUID);
 
-    public void getTempo();
+    void getTempo();
 
-    public void getPriority();
+    void getPriority();
 
-    public void getNextTrafficNode();
+    void getNextTrafficNode();
 
-    public void getFinalTrafficNode();
+    void getFinalTrafficNode();
 }

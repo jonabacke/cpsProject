@@ -4,7 +4,6 @@ import Config.ConfigFile;
 import org.eclipse.paho.client.mqttv3.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 
 public class MqttSend {
 
@@ -32,7 +31,6 @@ public class MqttSend {
         MqttMessage msg = new MqttMessage(str.getBytes(StandardCharsets.UTF_8));
         msg.setQos(qos);
         msg.setRetained(retain);
-        System.out.println("publish on: " + topic);
         try {
             this.publisher.publish(topic, msg);
         } catch (MqttException e) {
