@@ -27,11 +27,11 @@ public class TrafficUser implements ITrafficUser {
     }
 
     private void test() {
-        this.nextTrafficNode = "1";
+        this.nextTrafficNode = "0";
         this.signIn();
         new Thread(() -> {
             while (true) {
-                this.trafficUserInvokeStub.setTempo(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, Math.random() * 100, this.uuid);
+                this.trafficUserInvokeStub.setTempo(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid, Math.random() * 100);
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
@@ -42,7 +42,7 @@ public class TrafficUser implements ITrafficUser {
     }
 
     public void signIn() {
-        this.trafficUserInvokeStub.signInTrafficUser(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.getNetworkString(), this.uuid);
+        this.trafficUserInvokeStub.signInTrafficUser(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid, this.getNetworkString());
     }
 
     public void signOut() {
@@ -79,22 +79,6 @@ public class TrafficUser implements ITrafficUser {
 
     public void calcNextDestination() {
         this.nextTrafficNode = finalTrafficNode;
-    }
-
-    @Override
-    public void getTempo() {
-    }
-
-    @Override
-    public void getPriority() {
-    }
-
-    @Override
-    public void getFinalTrafficNode() {
-    }
-
-    @Override
-    public void getNextTrafficNode() {
     }
 
     @Override

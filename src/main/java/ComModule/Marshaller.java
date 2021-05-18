@@ -63,8 +63,11 @@ public class Marshaller {
                     } else if (parameters[i].getType().getName().equals("int")) {
                         result = result.concat("Integer");
                         result += ConfigFile.SEPARATOR_MESSAGE_CONCAT;
+                    } else if (parameters[i].getType().getName().equals("String")) {
+                        result = result.concat("String");
+                        result += ConfigFile.SEPARATOR_MESSAGE_CONCAT;
                     } else {
-                        throw new IllegalArgumentException();
+                        throw new IllegalArgumentException("" + parameters[i]);
                     }
                     result = result.concat(parameterValues[i].toString());
                     result += ConfigFile.SEPARATOR_MESSAGE_CONCAT;

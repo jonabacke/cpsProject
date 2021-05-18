@@ -19,7 +19,7 @@ public class TrafficUserInvokeStub implements ITrafficUserInvoke {
             this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
             this.oldTargetName = targetName;
         }
-        this.trafficNodeService.signInTrafficUser(networkString, trafficUserUUID);
+        this.trafficNodeService.signInTrafficUser(trafficUserUUID, networkString);
     }
 
     @Override
@@ -32,42 +32,42 @@ public class TrafficUserInvokeStub implements ITrafficUserInvoke {
     }
 
     @Override
-    public void setTempo(String targetName, double tempo, String trafficUserUUID) {
+    public void setTempo(String targetName, String trafficUserUUID, double tempo) {
         if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
             this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
             this.oldTargetName = targetName;
         }
-        this.trafficNodeService.setTempo(tempo, trafficUserUUID);
+        this.trafficNodeService.setTempo(trafficUserUUID, tempo);
 
     }
 
     @Override
-    public void setPriority(String targetName, String priority, String trafficUserUUID) {
+    public void setPriority(String targetName, String trafficUserUUID, String priority) {
         if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
             this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
             this.oldTargetName = targetName;
         }
-        this.trafficNodeService.setPriority(priority, trafficUserUUID);
+        this.trafficNodeService.setPriority(trafficUserUUID, priority);
 
     }
 
     @Override
-    public void setNextTrafficNode(String targetName, String nextTrafficNode, String trafficUserUUID) {
+    public void setNextTrafficNode(String targetName, String trafficUserUUID, String nextTrafficNode) {
         if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
             this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
             this.oldTargetName = targetName;
         }
-        this.trafficNodeService.setNextTrafficNode(nextTrafficNode, trafficUserUUID);
+        this.trafficNodeService.setNextTrafficNode(trafficUserUUID, nextTrafficNode);
 
     }
 
     @Override
-    public void setFinalTrafficNode(String targetName, String finalTrafficNode, String trafficUserUUID) {
+    public void setFinalTrafficNode(String targetName, String trafficUserUUID, String finalTrafficNode) {
         if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
             this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
             this.oldTargetName = targetName;
         }
-        this.trafficNodeService.setFinalTrafficNode(finalTrafficNode, trafficUserUUID);
+        this.trafficNodeService.setFinalTrafficNode(trafficUserUUID, finalTrafficNode);
 
     }
 }

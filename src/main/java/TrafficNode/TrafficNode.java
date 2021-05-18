@@ -57,7 +57,7 @@ public class TrafficNode implements ITrafficNode {
     }
 
     @Override
-    public void signInTrafficUser(String trafficUserNetworkString, String trafficUserUUID) {
+    public void signInTrafficUser(String trafficUserUUID, String trafficUserNetworkString) {
         System.out.println("signIn: " + trafficUserUUID);
         this.trafficUserMap.put(trafficUserUUID, new TrafficUserMock(trafficUserNetworkString));
     }
@@ -69,25 +69,25 @@ public class TrafficNode implements ITrafficNode {
     }
 
     @Override
-    public void setTempo(double tempo, String trafficUserUUID) {
+    public void setTempo(String trafficUserUUID, double tempo) {
         System.out.println("Tempo: " + tempo);
         this.trafficUserMap.get(trafficUserUUID).setTempo(tempo);
     }
 
     @Override
-    public void setPriority(String priority, String trafficUserUUID) {
+    public void setPriority(String trafficUserUUID, String priority) {
         System.out.println("Priority: " + priority);
         this.trafficUserMap.get(trafficUserUUID).setPriority(EPriority.valueOf(priority));
     }
 
     @Override
-    public void setNextTrafficNode(String nextTrafficNode, String trafficUserUUID) {
+    public void setNextTrafficNode(String trafficUserUUID, String nextTrafficNode) {
         System.out.println("NextTrafficNode: " + nextTrafficNode);
         this.trafficUserMap.get(trafficUserUUID).setNextTrafficNode(nextTrafficNode);
     }
 
     @Override
-    public void setFinalTrafficNode(String finalTrafficNode, String trafficUserUUID) {
+    public void setFinalTrafficNode(String trafficUserUUID, String finalTrafficNode) {
         System.out.println("FinalTrafficNode: " + finalTrafficNode);
         this.trafficUserMap.get(trafficUserUUID).setFinalTrafficNode(finalTrafficNode);
     }

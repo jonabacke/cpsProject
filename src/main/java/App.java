@@ -20,12 +20,12 @@ public class App {
 
 
 
-    private static final long STARTUP_DELAY = 100;
+    private static final long STARTUP_DELAY = 1000;
     public static void main(String[] args) {
         Logger.getGlobal().getParent().getHandlers()[0].setLevel(Level.FINE);
         Logger.getGlobal().getParent().getHandlers()[0].setFormatter(new LogFormatter());
         if (args.length > 0) new App(Integer.getInteger(args[0]));
-        else new App(10);
+        else new App(2);
 
     }
 

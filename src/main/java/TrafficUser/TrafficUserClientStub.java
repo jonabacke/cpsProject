@@ -34,25 +34,6 @@ public class TrafficUserClientStub implements ITrafficUser {
         middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), trafficNodeUUID);
     }
 
-    @Override
-    public void getTempo() {
-        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName());
-    }
-
-    @Override
-    public void getPriority() {
-        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName());
-    }
-
-    @Override
-    public void getNextTrafficNode() {
-        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName());
-    }
-
-    @Override
-    public void getFinalTrafficNode() {
-        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName());
-    }
 
 
 }

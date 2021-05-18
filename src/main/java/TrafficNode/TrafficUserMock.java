@@ -21,11 +21,15 @@ public class TrafficUserMock {
 
     public TrafficUserMock(String networkString) {
         String [] networkStrings = networkString.split(ConfigFile.SEPARATOR_NETWORK_CONCAT);
-        this.uuid = networkStrings[0];
-        this.tempo = Double.parseDouble(networkStrings[1]);
-        this.priority = EPriority.valueOf(networkStrings[2]);
-        this.nextTrafficNode = networkStrings[3];
-        this.finalTrafficNode = networkStrings[4];
+        if (networkStrings.length > 3) {
+            this.uuid = networkStrings[0];
+            this.tempo = Double.parseDouble(networkStrings[1]);
+            this.priority = EPriority.valueOf(networkStrings[2]);
+            this.nextTrafficNode = networkStrings[3];
+        }
+        if (networkStrings.length == 5) {
+            this.finalTrafficNode = networkStrings[4];
+        }
     }
 
     public double getTempo() {
