@@ -48,4 +48,12 @@ public class TrafficNodeInvokeStub implements ITrafficNodeInvoke {
         this.trafficUserService.buildEmergencyCorridor();
     }
 
+    public void publishVisualizationData(String targetName, String msg) {
+        if (this.trafficUserService == null || !this.oldTargetName.equals(targetName)) {
+            this.trafficUserService = new TrafficUserClientStub(this.middleware, targetName);
+            this.oldTargetName = targetName;
+        }
+        this.trafficUserService.publishVisualizationData(msg);
+    }
+
 }

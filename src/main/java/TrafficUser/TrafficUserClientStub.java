@@ -35,5 +35,7 @@ public class TrafficUserClientStub implements ITrafficUser {
     }
 
 
-
+    public void publishVisualizationData(String msg) {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), msg);
+    }
 }

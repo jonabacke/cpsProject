@@ -11,7 +11,9 @@ public class TrafficNode implements ITrafficNode {
     Map<String, TrafficUserMock> trafficUserMap;
     String uuid;
 
+
     TrafficNodeInvokeStub trafficNodeInvokeStub;
+    private EPriority state;
 
     public TrafficNode(String uuid, TrafficNodeInvokeStub trafficNodeInvokeStub) {
         this.trafficNodes = new HashSet<>();
@@ -60,6 +62,10 @@ public class TrafficNode implements ITrafficNode {
     public void signInTrafficUser(String trafficUserUUID, String trafficUserNetworkString) {
         System.out.println("signIn: " + trafficUserUUID);
         this.trafficUserMap.put(trafficUserUUID, new TrafficUserMock(trafficUserNetworkString));
+        if (this.trafficUserMap.get(trafficUserUUID).getPriority().equals(EPriority.EMERGENCY)) {
+            this.state = EPriority.SUPER;
+            this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", this.trafficUserMap.get(trafficUserUUID).getPriority().toString());
+        }
     }
 
     @Override
@@ -72,11 +78,16 @@ public class TrafficNode implements ITrafficNode {
     public void setTempo(String trafficUserUUID, double tempo) {
         System.out.println("Tempo: " + tempo);
         this.trafficUserMap.get(trafficUserUUID).setTempo(tempo);
+        trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/speed", trafficUserUUID + "/" + tempo);
     }
 
     @Override
     public void setPriority(String trafficUserUUID, String priority) {
         System.out.println("Priority: " + priority);
+        if (priority.equals(EPriority.EMERGENCY.toString())) {
+            this.state = EPriority.SUPER;
+            this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", priority);
+        }
         this.trafficUserMap.get(trafficUserUUID).setPriority(EPriority.valueOf(priority));
     }
 
