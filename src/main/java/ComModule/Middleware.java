@@ -24,8 +24,14 @@ public class Middleware implements IMiddlewareInvoke, IMiddlewareRegisterService
 
     @Override
     public void invoke(String serviceName, String functionName, Object ...paramValues) {
-        String msg = Marshaller.pack(getClassByName(serviceName), functionName, paramValues);
-        logger.info(msg + " on " + serviceName);
+        logger.info(serviceName);
+        String msg;
+        if (!serviceName.contains("frontend")) {
+            msg = Marshaller.pack(getClassByName(serviceName), functionName, paramValues);
+            logger.info(msg + " on " + serviceName);
+        } else {
+            msg = (String) paramValues[0];
+        }
         this.mqtt.sendMsg(serviceName, msg, this.qos, this.retain);
     }
 
