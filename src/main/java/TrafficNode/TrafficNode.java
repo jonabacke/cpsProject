@@ -78,7 +78,9 @@ public class TrafficNode implements ITrafficNode {
     public void setTempo(String trafficUserUUID, double tempo) {
         System.out.println("Tempo: " + tempo);
         this.trafficUserMap.get(trafficUserUUID).setTempo(tempo);
-        trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/speed", trafficUserUUID + "/" + tempo);
+        String Tempo = "" + tempo;
+        Tempo = Tempo.substring(0, 5);
+        trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/speed", trafficUserUUID + "/" + Tempo);
     }
 
     @Override
