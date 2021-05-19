@@ -12,6 +12,7 @@ public class TrafficNode implements ITrafficNode {
     String uuid;
 
 
+
     TrafficNodeInvokeStub trafficNodeInvokeStub;
     private EPriority state;
 
@@ -63,15 +64,17 @@ public class TrafficNode implements ITrafficNode {
         System.out.println("signIn: " + trafficUserUUID);
         this.trafficUserMap.put(trafficUserUUID, new TrafficUserMock(trafficUserNetworkString));
         if (this.trafficUserMap.get(trafficUserUUID).getPriority().equals(EPriority.EMERGENCY)) {
-            this.state = EPriority.SUPER;
+            this.state = EPriority.EMERGENCY;
             this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", this.trafficUserMap.get(trafficUserUUID).getPriority().toString());
         }
+        this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/amount", "" + this.trafficUserMap.size());
     }
 
     @Override
     public void signOutTrafficUser(String trafficUserUUID) {
         System.out.println("signOut: " + trafficUserUUID);
         this.trafficUserMap.remove(trafficUserUUID);
+        this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/amount", "" + this.trafficUserMap.size());
     }
 
     @Override
