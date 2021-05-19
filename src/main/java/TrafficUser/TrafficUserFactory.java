@@ -22,7 +22,12 @@ public class TrafficUserFactory {
         } else {
             prio = EPriority.NORMAL;
         }
-        new TrafficUserFactory(prio);
+        if (args.length > 0) {
+            new TrafficUserFactory(prio, "user" + args[0]);
+            //new TrafficUserFactory(prio, UUID.randomUUID().toString());
+        } else {
+            new TrafficUserFactory(prio, UUID.randomUUID().toString());
+        }
     }
 
     private String uuid;
@@ -30,8 +35,8 @@ public class TrafficUserFactory {
     private TrafficUser trafficUser;
     private TrafficUserInvokeStub trafficUserInvokeStub;
 
-    public TrafficUserFactory(EPriority prio) {
-        this.uuid = UUID.randomUUID().toString();
+    public TrafficUserFactory(EPriority prio, String uuid) {
+        this.uuid = uuid;
 
         this.retain = false;
         this.qos = 0;

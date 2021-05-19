@@ -47,7 +47,7 @@ public class App {
             }
         }
 
-        for (int i = 0; i < amount; i++) {
+        for (int i = 0; i < amount * 2; i++) {
             int finalI = i;
             new Thread(() -> this.buildProcess(TrafficUserFactory.class.getName(), "" + finalI)).start();
             try {
