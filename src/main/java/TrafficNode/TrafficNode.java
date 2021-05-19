@@ -30,10 +30,13 @@ public class TrafficNode implements ITrafficNode {
 
     public void test() {
         new Thread(() -> {
+            String status = "RED";
             while (true) {
                 if (this.trafficNodes.size() > 0 && this.trafficUserMap.size() > 0) {
                     String [] user = this.trafficUserMap.keySet().toArray(new String[0]);
                     this.setNextTrafficNodeForUser(this.trafficUserMap.get(user[(int) (Math.random() * user.length)]).getUuid());
+                    this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", status);
+                    status = "Green";
                 }
                 try {
                     Thread.sleep((int) (Math.random() * 10000));
@@ -66,7 +69,7 @@ public class TrafficNode implements ITrafficNode {
         if (this.trafficUserMap.get(trafficUserUUID).getPriority().equals(EPriority.EMERGENCY)) {
             this.state = EPriority.EMERGENCY;
         }
-        this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", this.trafficUserMap.get(trafficUserUUID).getPriority().toString());
+        this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/mode", this.trafficUserMap.get(trafficUserUUID).getPriority().toString());
         this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/amount", "" + this.trafficUserMap.size());
     }
 
