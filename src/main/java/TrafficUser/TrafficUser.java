@@ -33,7 +33,7 @@ public class TrafficUser implements ITrafficUser {
             while (true) {
                 this.trafficUserInvokeStub.setTempo(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid, Math.random() * 100);
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep((int) (Math.random() * 2000));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
