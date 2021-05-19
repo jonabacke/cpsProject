@@ -65,8 +65,8 @@ public class TrafficNode implements ITrafficNode {
         this.trafficUserMap.put(trafficUserUUID, new TrafficUserMock(trafficUserNetworkString));
         if (this.trafficUserMap.get(trafficUserUUID).getPriority().equals(EPriority.EMERGENCY)) {
             this.state = EPriority.EMERGENCY;
-            this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", this.trafficUserMap.get(trafficUserUUID).getPriority().toString());
         }
+        this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", this.trafficUserMap.get(trafficUserUUID).getPriority().toString());
         this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/amount", "" + this.trafficUserMap.size());
     }
 
