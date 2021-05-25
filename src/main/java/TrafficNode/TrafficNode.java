@@ -48,7 +48,7 @@ public class TrafficNode implements ITrafficNode {
                     }
                 }
                 try {
-                    Thread.sleep((int) (Math.random() * 10000));
+                    Thread.sleep((int) (Math.random() * 1000));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -62,7 +62,7 @@ public class TrafficNode implements ITrafficNode {
         if (!this.trafficNodes.containsKey(trafficNodeUUID)) {
             this.registerOnNeighborTrafficNodes();
         }
-        this.trafficNodes.put(trafficNodeUUID, new NeighborNodes(distance, weight, isDefault, uuid));
+        this.trafficNodes.put(trafficNodeUUID, new NeighborNodes(distance, weight, isDefault, uuid, null));
     }
 
     @Override
@@ -127,14 +127,17 @@ public class TrafficNode implements ITrafficNode {
         while (iterator.hasNext()) {
             NeighborNodes next = iterator.next();
             if (next.isDefault) {
-                defaultRoute = next.getUuid();
+                defaultRoute = next.getDestinationUUID();
                 break;
             }
         }
         String finalDefaultRoute = defaultRoute;
+        /**
+         *
         if (this.trafficNodes.get(defaultRoute).weight * this.trafficUserMap.entrySet().stream().filter(x -> x.getValue().getNextTrafficNode().equals(finalDefaultRoute)).count() > 100)
         {
-            // TODO ErsatzWeg
+            // TODO ErsatzWeg -> ask next Route with lowest weight
+
             return defaultRoute;
         }
         else
@@ -142,6 +145,8 @@ public class TrafficNode implements ITrafficNode {
             return defaultRoute;
         }
         // TODO if default full check alternative
+         */
+        return defaultRoute;
     }
 
     public void setNextTrafficNodeForUser(String trafficUserUUID) {

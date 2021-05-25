@@ -27,11 +27,11 @@ public class TrafficUser implements ITrafficUser {
     }
 
     private void test() {
-        this.nextTrafficNode = "0";
+        this.nextTrafficNode = "N1";
         this.signIn();
         new Thread(() -> {
             while (true) {
-                this.trafficUserInvokeStub.setTempo(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid, Math.random() * 100);
+                this.trafficUserInvokeStub.setTempo(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid, Math.random() * 10 + 50);
                 try {
                     Thread.sleep((int) (Math.random() * 2000));
                 } catch (InterruptedException e) {

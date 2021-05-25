@@ -14,7 +14,7 @@ public class TrafficUserFactory {
     private final Integer qos;
 
     public static void main(String[] args) {
-        Logger.getGlobal().getParent().getHandlers()[0].setLevel(Level.INFO);
+        Logger.getGlobal().getParent().getHandlers()[0].setLevel(Level.WARNING);
         Logger.getGlobal().getParent().getHandlers()[0].setFormatter(new LogFormatter());
         EPriority prio;
         if (Math.random() < 0.5) {

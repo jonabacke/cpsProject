@@ -5,6 +5,7 @@ import TrafficUser.TrafficUserFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,7 +23,7 @@ public class App {
 
     private static final long STARTUP_DELAY = 1000;
     public static void main(String[] args) {
-        Logger.getGlobal().getParent().getHandlers()[0].setLevel(Level.FINE);
+        Logger.getGlobal().getParent().getHandlers()[0].setLevel(Level.WARNING);
         Logger.getGlobal().getParent().getHandlers()[0].setFormatter(new LogFormatter());
         if (args.length > 0) new App(Integer.getInteger(args[0]));
         else new App(0);
@@ -36,32 +37,36 @@ public class App {
         this.classPath = System.getProperty("java.class.path");
         this.nodeList = new ArrayList<>();
 
-        for (int i = 0; i < amount; i++) {
-            int finalI = i;
-            new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "" + finalI)).start();
-            try {
-                Thread.sleep(STARTUP_DELAY);
-            } catch (InterruptedException e) {
-                logger.warning(() -> this.interrupt + e);
-                Thread.currentThread().interrupt();
-            }
-        }
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N1", "StreetN1_N2.json", "StreetN1_N3.json")).start();
+        sleep(STARTUP_DELAY);
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N2", "StreetN2_N3.json", "StreetN2_N4.json")).start();
+        sleep(STARTUP_DELAY);
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N3", "StreetN3_N4.json", "StreetN3_N5.json")).start();
+        sleep(STARTUP_DELAY);
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N4", "StreetN4_N5.json", "StreetN4_N6.json")).start();
+        sleep(STARTUP_DELAY);
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N5", "StreetN5_N6.json", "StreetN5_N7.json")).start();
+        sleep(STARTUP_DELAY);
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N6", "StreetN6_N7.json")).start();
+        sleep(STARTUP_DELAY);
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N7", "StreetN7_N1.json")).start();
 
-        for (int i = 0; i < amount * 2; i++) {
+        for (int i = 0; i < 10 * 2; i++) {
             int finalI = i;
             new Thread(() -> this.buildProcess(TrafficUserFactory.class.getName(), "" + finalI)).start();
             try {
-                Thread.sleep(STARTUP_DELAY);
+                Thread.sleep(STARTUP_DELAY * 100);
             } catch (InterruptedException e) {
                 logger.warning(() -> this.interrupt + e);
                 Thread.currentThread().interrupt();
             }
         }
     }
-    private void buildProcess(String className, String uuid) {
+    private void buildProcess(String className, String uuid, String ...street) {
         List<String> command = new ArrayList<>();
         List<String> params = new ArrayList<>();
         params.add(uuid);
+        params.addAll(Arrays.asList(street));
         command.add(this.javaBin);
         command.add("-cp");
         command.add(this.classPath);
@@ -83,5 +88,14 @@ public class App {
             Thread.currentThread().interrupt();
         }
 
+    }
+
+    private void sleep(long s) {
+        try {
+            Thread.sleep(s);
+        } catch (InterruptedException e) {
+            logger.warning(() -> this.interrupt + e);
+            Thread.currentThread().interrupt();
+        }
     }
 }

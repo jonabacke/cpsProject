@@ -1,0 +1,8 @@
+{
+  "streetUUID": "S12",
+  "sourceUUID": "N1",
+  "destinationUUID": "N2",
+  "distance": "400",
+  "weight": "0.2",
+  "isDefault": "true"
+}

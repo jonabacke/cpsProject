@@ -2,17 +2,19 @@ package TrafficNode;
 
 public class NeighborNodes
 {
-    private final String uuid;
+    private final String sourceUUID;
+    private final String destinationUUID;
     double distance;
     double weight;
     boolean isDefault;
 
-    public NeighborNodes(double distance, double weight, boolean isDefault, String uuid)
+    public NeighborNodes(double distance, double weight, boolean isDefault, String sourceUUID, String destinationUUID)
     {
         this.distance = distance;
         this.weight = weight;
         this.isDefault = isDefault;
-        this.uuid = uuid;
+        this.sourceUUID = sourceUUID;
+        this.destinationUUID = destinationUUID;
     }
 
     public double getDistance() {
@@ -23,7 +25,11 @@ public class NeighborNodes
         return weight;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getsourceUUID() {
+        return sourceUUID;
+    }
+
+    public String getDestinationUUID() {
+        return destinationUUID;
     }
 }
