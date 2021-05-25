@@ -4,12 +4,16 @@ import ComModule.Middleware;
 import ComModule.SkeletonStub;
 import Config.LogFormatter;
 import TrafficUser.TrafficUserFactory;
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,8 +26,29 @@ public class TrafficNodeFactory {
     public static void main(String[] args) {
         Logger.getGlobal().getParent().getHandlers()[0].setLevel(Level.FINE);
         Logger.getGlobal().getParent().getHandlers()[0].setFormatter(new LogFormatter());
-        if (args.length > 0)        new TrafficNodeFactory(args[0]);
-        else new TrafficNodeFactory("1");
+
+        try {
+            BufferedWriter writer = Files.newBufferedWriter(Paths.get("src/main/java/Config/system.json"));
+
+            JsonObject system = new JsonObject();
+            system.put("uuid", "0");
+            Jsoner.serialize(system, writer);
+
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Reader reader = Files.newBufferedReader(Paths.get("src/main/java/Config/system.json"));
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //if (args.length > 0)        new TrafficNodeFactory(args[0], Double.parseDouble(args[1]), Double.parseDouble(args[2]), Boolean.getBoolean(args[3]));
+        //else new TrafficNodeFactory("1",0, 0, false);
     }
 
 
@@ -32,9 +57,11 @@ public class TrafficNodeFactory {
     private final TrafficNode trafficNode;
     private final TrafficNodeInvokeStub trafficNodeInvoke;
 
-    public TrafficNodeFactory(String uuid) {
+    public TrafficNodeFactory(String uuid, double distance, double weight, boolean isDefault) {
         if (uuid == null) this.uuid = UUID.randomUUID().toString();
         else this.uuid = uuid;
+
+        Map<String, NeighborNodes> neighborNodesMap = new HashMap<>();
 
         this.retain = false;
         this.qos = 0;
@@ -46,7 +73,7 @@ public class TrafficNodeFactory {
         this.trafficNodeInvoke = new TrafficNodeInvokeStub(this.middleware);
 
         // Build Object
-        this.trafficNode = new TrafficNode(uuid, this.trafficNodeInvoke);
+        this.trafficNode = new TrafficNode(uuid, this.trafficNodeInvoke, neighborNodesMap);
 
         // Build CallStub
             // TrafficUser

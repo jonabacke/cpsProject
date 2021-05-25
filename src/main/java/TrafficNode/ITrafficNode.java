@@ -4,8 +4,12 @@ public interface ITrafficNode {
     /**
      * Fügt ein TrafficNode hinzu
      * @param trafficNodeUUID, welches hinzugefügt werden soll
+     * @param distance, Distance to this trafficNode
+     * @param weight, weight of the TrafficUser on this Road
+     * @param isDefault
+     * @param uuid
      */
-    void signInTrafficNode(String trafficNodeUUID);
+    void signInTrafficNode(String trafficNodeUUID, double distance, double weight, boolean isDefault, String uuid);
 
     /**
      * entfernt ein TrafficNode, dass zb. defekt ist

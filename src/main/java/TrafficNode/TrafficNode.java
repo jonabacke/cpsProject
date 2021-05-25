@@ -7,24 +7,26 @@ import java.util.*;
 
 public class TrafficNode implements ITrafficNode {
 
-    Set<String> trafficNodes;
+    Map<String, NeighborNodes> trafficNodes;
     Map<String, TrafficUserMock> trafficUserMap;
     String uuid;
+
 
 
 
     TrafficNodeInvokeStub trafficNodeInvokeStub;
     private EPriority state;
 
-    public TrafficNode(String uuid, TrafficNodeInvokeStub trafficNodeInvokeStub) {
-        this.trafficNodes = new HashSet<>();
+    public TrafficNode(String uuid, TrafficNodeInvokeStub trafficNodeInvokeStub, Map<String, NeighborNodes> trafficNodes) {
+        this.trafficNodes = new HashMap<>();
         this.trafficUserMap = new HashMap<>();
         this.uuid = uuid;
         this.trafficNodeInvokeStub = trafficNodeInvokeStub;
+        this.trafficNodes = trafficNodes;
     }
 
     public void init() {
-        this.registerOnNeighborTrafficNodes();
+        //this.registerOnNeighborTrafficNodes();
         this.test();
     }
 
@@ -36,7 +38,14 @@ public class TrafficNode implements ITrafficNode {
                     String [] user = this.trafficUserMap.keySet().toArray(new String[0]);
                     this.setNextTrafficNodeForUser(this.trafficUserMap.get(user[(int) (Math.random() * user.length)]).getUuid());
                     this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", status);
-                    status = "Green";
+                    if (status.equals("GREEN"))
+                    {
+                        status = "RED";
+                    }
+                    else
+                    {
+                        status = "GREEN";
+                    }
                 }
                 try {
                     Thread.sleep((int) (Math.random() * 10000));
@@ -48,12 +57,12 @@ public class TrafficNode implements ITrafficNode {
     }
 
     @Override
-    public void signInTrafficNode(String trafficNodeUUID) {
+    public void signInTrafficNode(String trafficNodeUUID, double distance, double weight, boolean isDefault, String uuid) {
         System.out.println("signIn: " + trafficNodeUUID);
-        if (!this.trafficNodes.contains(trafficNodeUUID)) {
+        if (!this.trafficNodes.containsKey(trafficNodeUUID)) {
             this.registerOnNeighborTrafficNodes();
         }
-        this.trafficNodes.add(trafficNodeUUID);
+        this.trafficNodes.put(trafficNodeUUID, new NeighborNodes(distance, weight, isDefault, uuid));
     }
 
     @Override
@@ -112,8 +121,27 @@ public class TrafficNode implements ITrafficNode {
     }
 
     public String getNextTrafficNode() {
-        String [] nodes = this.trafficNodes.toArray(new String[0]);
-        return nodes[(int) (Math.random() * nodes.length)];
+        // TODO check default route
+        String defaultRoute = "";
+        Iterator<NeighborNodes> iterator = this.trafficNodes.values().iterator();
+        while (iterator.hasNext()) {
+            NeighborNodes next = iterator.next();
+            if (next.isDefault) {
+                defaultRoute = next.getUuid();
+                break;
+            }
+        }
+        String finalDefaultRoute = defaultRoute;
+        if (this.trafficNodes.get(defaultRoute).weight * this.trafficUserMap.entrySet().stream().filter(x -> x.getValue().getNextTrafficNode().equals(finalDefaultRoute)).count() > 100)
+        {
+            // TODO ErsatzWeg
+            return defaultRoute;
+        }
+        else
+        {
+            return defaultRoute;
+        }
+        // TODO if default full check alternative
     }
 
     public void setNextTrafficNodeForUser(String trafficUserUUID) {
@@ -121,7 +149,7 @@ public class TrafficNode implements ITrafficNode {
     }
 
     public void registerOnNeighborTrafficNodes() {
-        this.trafficNodeInvokeStub.signInTrafficNode(ITrafficNode.class.getName(), this.uuid);
+        //this.trafficNodeInvokeStub.signInTrafficNode(ITrafficNode.class.getName(), this.uuid, , );
     }
 
 }

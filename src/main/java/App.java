@@ -25,7 +25,7 @@ public class App {
         Logger.getGlobal().getParent().getHandlers()[0].setLevel(Level.FINE);
         Logger.getGlobal().getParent().getHandlers()[0].setFormatter(new LogFormatter());
         if (args.length > 0) new App(Integer.getInteger(args[0]));
-        else new App(2);
+        else new App(0);
 
     }
 

@@ -15,12 +15,12 @@ public class TrafficNodeInvokeStub implements ITrafficNodeInvoke {
     }
 
     @Override
-    public void signInTrafficNode(String targetName, String trafficNodeUUID) {
+    public void signInTrafficNode(String targetName, String trafficNodeUUID, double distance, double weight, boolean isDefault, String uuid) {
         if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
             this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
             this.oldTargetName = targetName;
         }
-        this.trafficNodeService.signInTrafficNode(trafficNodeUUID);
+        this.trafficNodeService.signInTrafficNode(trafficNodeUUID, distance, weight, isDefault, uuid);
     }
 
     @Override

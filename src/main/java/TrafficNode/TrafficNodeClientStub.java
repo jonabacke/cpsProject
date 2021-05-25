@@ -19,7 +19,7 @@ public class TrafficNodeClientStub implements ITrafficNode {
     }
 
     @Override
-    public void signInTrafficNode(String trafficNodeUUID) {
+    public void signInTrafficNode(String trafficNodeUUID, double distance, double weight, boolean isDefault, String uuid) {
         middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), trafficNodeUUID);
     }
 
