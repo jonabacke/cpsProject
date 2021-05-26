@@ -36,7 +36,9 @@ public class TrafficNode implements ITrafficNode {
             while (true) {
                 if (this.trafficNodes.size() > 0 && this.trafficUserMap.size() > 0) {
                     String [] user = this.trafficUserMap.keySet().toArray(new String[0]);
-                    this.setNextTrafficNodeForUser(this.trafficUserMap.get(user[(int) (Math.random() * user.length)]).getUuid());
+                    for (int i = 0; i < (int) (user.length * Math.random()); i++) {
+                        this.setNextTrafficNodeForUser(this.trafficUserMap.get(user[(int) (Math.random() * user.length)]).getUuid());
+                    }
                     this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", status);
                     if (status.equals("GREEN"))
                     {
@@ -131,6 +133,7 @@ public class TrafficNode implements ITrafficNode {
                 break;
             }
         }
+        //this.trafficNodes.get(defaultRoute).weight * this.trafficUserMap.entrySet().stream().filter(x -> x.getValue().getNextTrafficNode().equals(finalDefaultRoute))
         String finalDefaultRoute = defaultRoute;
         /**
          *
