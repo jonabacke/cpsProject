@@ -55,7 +55,7 @@ public class App {
             int finalI = i;
             new Thread(() -> this.buildProcess(TrafficUserFactory.class.getName(), "" + finalI)).start();
             try {
-                Thread.sleep(STARTUP_DELAY * 100);
+                Thread.sleep(STARTUP_DELAY);
             } catch (InterruptedException e) {
                 logger.warning(() -> this.interrupt + e);
                 Thread.currentThread().interrupt();
