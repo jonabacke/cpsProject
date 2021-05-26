@@ -44,15 +44,12 @@ public class TrafficNode implements ITrafficNode {
                         if (temp != null) {
                             this.setNextTrafficNodeForUser(temp.getUuid());
                         }
+                        this.sleep(100);
                     }
                     status = "RED";
                     this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", status);
                 }
-                try {
-                    Thread.sleep((int) (Math.random() * 1000));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                this.sleep((long)(Math.random() * 1000));
             }
         }).start();
     }
@@ -156,6 +153,14 @@ public class TrafficNode implements ITrafficNode {
 
     public void registerOnNeighborTrafficNodes() {
         //this.trafficNodeInvokeStub.signInTrafficNode(ITrafficNode.class.getName(), this.uuid, , );
+    }
+
+    private void sleep(long s) {
+        try {
+            Thread.sleep(s);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }
