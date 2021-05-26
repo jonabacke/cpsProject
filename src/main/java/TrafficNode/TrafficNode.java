@@ -37,21 +37,16 @@ public class TrafficNode implements ITrafficNode {
             while (true) {
                 if (this.trafficNodes.size() > 0 && this.trafficUserMap.size() > 0) {
                     String [] user = this.trafficUserMap.keySet().toArray(new String[0]);
+                    status = "GREEN";
+                    this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", status);
                     for (int i = 0; i < (int) (user.length * Math.random()); i++) {
                         TrafficUserMock temp = this.trafficUserMap.get(user[(int) (Math.random() * user.length)]);
                         if (temp != null) {
                             this.setNextTrafficNodeForUser(temp.getUuid());
                         }
                     }
+                    status = "RED";
                     this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", status);
-                    if (status.equals("GREEN"))
-                    {
-                        status = "RED";
-                    }
-                    else
-                    {
-                        status = "GREEN";
-                    }
                 }
                 try {
                     Thread.sleep((int) (Math.random() * 1000));
