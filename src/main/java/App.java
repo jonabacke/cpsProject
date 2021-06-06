@@ -37,30 +37,26 @@ public class App {
         this.classPath = System.getProperty("java.class.path");
         this.nodeList = new ArrayList<>();
 
-        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N1", "StreetN1_N2.json", "StreetN1_N3.json")).start();
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N1", "StreetN1_N2.json", "StreetN1_N3.json", "StreetN7_N1.json")).start();
         sleep(STARTUP_DELAY);
-        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N2", "StreetN2_N3.json", "StreetN2_N4.json")).start();
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N2", "StreetN2_N3.json", "StreetN2_N4.json", "StreetN1_N2.json")).start();
         sleep(STARTUP_DELAY);
-        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N3", "StreetN3_N4.json", "StreetN3_N5.json")).start();
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N3", "StreetN3_N4.json", "StreetN3_N5.json", "StreetN1_N3.json", "StreetN2_N3.json")).start();
         sleep(STARTUP_DELAY);
-        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N4", "StreetN4_N5.json", "StreetN4_N6.json")).start();
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N4", "StreetN4_N5.json", "StreetN4_N6.json", "StreetN3_N4.json", "StreetN2_N4.json")).start();
         sleep(STARTUP_DELAY);
-        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N5", "StreetN5_N6.json", "StreetN5_N7.json")).start();
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N5", "StreetN5_N6.json", "StreetN5_N7.json", "StreetN3_N5.json", "StreetN4_N5.json")).start();
         sleep(STARTUP_DELAY);
-        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N6", "StreetN6_N7.json")).start();
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N6", "StreetN6_N7.json", "StreetN4_N6.json", "StreetN5_N6.json")).start();
         sleep(STARTUP_DELAY);
-        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N7", "StreetN7_N1.json")).start();
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N7", "StreetN7_N1.json", "StreetN6_N7.json")).start();
 
         for (int i = 0; i < 10 * 2; i++) {
             int finalI = i;
             new Thread(() -> this.buildProcess(TrafficUserFactory.class.getName(), "" + finalI)).start();
-            try {
-                Thread.sleep(STARTUP_DELAY);
-            } catch (InterruptedException e) {
-                logger.warning(() -> this.interrupt + e);
-                Thread.currentThread().interrupt();
-            }
+            sleep(STARTUP_DELAY);
         }
+        logger.severe("All processes are running");
     }
     private void buildProcess(String className, String uuid, String ...street) {
         List<String> command = new ArrayList<>();

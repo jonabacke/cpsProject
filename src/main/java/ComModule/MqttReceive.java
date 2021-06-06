@@ -32,7 +32,7 @@ public class MqttReceive {
         options.setCleanSession(true);
         options.setConnectionTimeout(10);
         options.setMaxInflight(1);
-        System.out.println("listen on: " + this.topic);
+        logger.info("listen on: " + this.topic);
         publisher.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable throwable) {

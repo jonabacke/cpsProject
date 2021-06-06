@@ -62,4 +62,11 @@ public interface ITrafficNode {
      * @param finalTrafficNode neue ZielTrafficNode des TrafficUsers
      */
     void setFinalTrafficNode(String trafficUserUUID, String finalTrafficNode);
+
+    /**
+     * Prüfen der Auslastung des nächsten Nodes
+     * @param trafficNodeUUID sender Node
+     * @param amount anzahl der Fahrzeuge
+     */
+    void setWorkload(String trafficNodeUUID, int amount);
 }

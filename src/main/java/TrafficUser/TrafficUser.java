@@ -4,8 +4,10 @@ import Config.ConfigFile;
 import TrafficNode.ITrafficNode;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class TrafficUser implements ITrafficUser {
+    private final Logger logger = Logger.getGlobal();
 
     private double tempo;
     private final EPriority priority;
@@ -83,7 +85,7 @@ public class TrafficUser implements ITrafficUser {
 
     @Override
     public void setNextTrafficNode(String trafficNodeUUID) {
-        System.out.println("Set new Goal " + trafficNodeUUID);
+        logger.info("Set new Goal " + trafficNodeUUID);
         if (!this.nextTrafficNode.equalsIgnoreCase(trafficNodeUUID)) {
             this.signOut();
             this.nextTrafficNode = trafficNodeUUID;

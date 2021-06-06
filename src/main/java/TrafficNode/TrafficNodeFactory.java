@@ -29,7 +29,6 @@ public class TrafficNodeFactory {
         Logger.getGlobal().getParent().getHandlers()[0].setLevel(Level.WARNING);
         Logger.getGlobal().getParent().getHandlers()[0].setFormatter(new LogFormatter());
         String uuid = UUID.randomUUID().toString();
-        System.out.println(args.length);
         if (args.length > 0) {
             uuid = args[0];
         }
@@ -39,6 +38,7 @@ public class TrafficNodeFactory {
             System.arraycopy(args, 1, streets, 0, args.length - 1);
         }
 
+        assert streets != null;
         new TrafficNodeFactory(uuid, streets);
         //if (args.length > 0)        new TrafficNodeFactory(args[0], Double.parseDouble(args[1]), Double.parseDouble(args[2]), Boolean.getBoolean(args[3]));
         //else new TrafficNodeFactory("1",0, 0, false);

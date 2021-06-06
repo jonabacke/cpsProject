@@ -17,4 +17,6 @@ public interface ITrafficNodeInvoke {
      * @param trafficNodeUUID, welches entfernt werden soll
      */
     public void signOutTrafficNode(String targetName, String trafficNodeUUID);
+
+    void setWorkload(String targetName, String trafficNodeUUID, int amount);
 }

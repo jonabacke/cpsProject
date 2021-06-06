@@ -32,6 +32,15 @@ public class TrafficNodeInvokeStub implements ITrafficNodeInvoke {
         this.trafficNodeService.signOutTrafficNode(trafficNodeUUID);
     }
 
+    @Override
+    public void setWorkload(String targetName, String trafficNodeUUID, int amount) {
+        if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
+            this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
+            this.oldTargetName = targetName;
+        }
+        this.trafficNodeService.setWorkload(trafficNodeUUID, amount);
+    }
+
     public void setNextTrafficNode(String targetName, String trafficUserUUID) {
         if (this.trafficUserService == null || !this.oldTargetName.equals(targetName)) {
             this.trafficUserService = new TrafficUserClientStub(this.middleware, targetName);
