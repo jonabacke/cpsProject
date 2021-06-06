@@ -6,9 +6,10 @@ import stm.State;
 import stm.Transition;
 
 
-public class MainControl {
+public class MainControlTrafficLight {
 
 
+    public String message = "";
     boolean greenLight = true;
     boolean redLight = true;
     public int counter = 0 ;
@@ -23,7 +24,7 @@ public class MainControl {
     /**
      * Erzeugt die States mit Transitionen.
      */
-    public MainControl() {
+    public MainControlTrafficLight() {
 
         // zuerst alle States mit Verhalten (Behavior)
         State initializing = new State("initializing") {
@@ -39,12 +40,31 @@ public class MainControl {
 
         initialState = initializing;
 
-        State red = new State("red") {
+        State normal = new State("normal") {
             @Override
             public void entry() {
-                printRedLight();
-                System.out.println(counter);
+                printNormalMode();
+            }
 
+            @Override
+            public void do_() {
+            }
+        };
+        State prio = new State("prio") {
+            @Override
+            public void entry() {
+                printPrioMode();
+            }
+
+            @Override
+            public void do_() {
+            }
+        };
+        State stau = new State("stau") {
+            @Override
+            public void entry() {
+                printStauMode();
+                //publish andere Nodes benachrichtigen
             }
 
             @Override
@@ -61,30 +81,46 @@ public class MainControl {
             public void do_() {
             }
         };
+        State red = new State("red") {
+            @Override
+            public void entry() {
+                printRedLight();
+            }
+
+            @Override
+            public void do_() {
+            }
+        };
 
         // TODO ergÃ¤nzen Sie hier die fehlenden States
 
         // und nun alle Transitionen:
 
-        new Transition(initializing, green).when(() -> counter==1);
-        new Transition(green, red).when(() -> counter==2);
+        new Transition(initializing, normal).when(() -> true);
+        new Transition(normal, stau).when(() -> message == "stau");
+        new Transition(normal, prio).when(() -> message == "prio");
+        new Transition(stau, normal).when(() -> message == "normal");
+        new Transition(stau, prio).when(() -> message == "prio");
+        new Transition(prio, normal).when(() -> message == "normal");
+        new Transition(prio, green).when(() -> message == "green");
 
         // TODO ergÃ¤nzen Sie hier die fehlenden Transitionen
     }
 
-    /**
-     * Behaviour: Ã–ffnen der TÃ¼ren
-     */
-    protected void printGreenLight() {
-        System.out.println("GREEN Light OOOOOOOOOOOOOONNNNNNNNNNNNNNN!!!!");;
-    }
-
-    /**
-     * Behaviour: Stoppen des Aufzugs, aufgrund der aktuellen Implementierung hier
-     * einfach als Flag umgesetzt.
-     */
     protected void printRedLight() {
-        System.out.println("RED Light OOOOOOOOOOOOOONNNNNNNNNNNNNNN!!!!");
+        //System.out.println("RED Light OOOOOOOOOOOOOONNNNNNNNNNNNNNN!!!!");
+    }
+    protected void printGreenLight() {
+        //System.out.println("GREEN Light OOOOOOOOOOOOOONNNNNNNNNNNNNNN!!!!");
+    }
+    protected void printPrioMode() {
+        //System.out.println("MODE = PRIO!!!!");
+    }
+    protected void printStauMode() {
+        //System.out.println("MODE = Stau!!!!");
+    }
+    protected void printNormalMode() {
+        //System.out.println("MODE = Normal!!!!");
     }
 
     // TODO ergÃ¤nzen Sie bei Bedarf hier weitere "Behaviours"
