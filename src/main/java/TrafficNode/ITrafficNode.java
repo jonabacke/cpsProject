@@ -69,4 +69,11 @@ public interface ITrafficNode {
      * @param amount anzahl der Fahrzeuge
      */
     void setWorkload(String trafficNodeUUID, int amount);
+
+    /**
+     * setzt den Ampelstatus einer Straße
+     * @param status status der Ampel ("RED", "GREEN")
+     * @param nodeUUID id der Straße
+     */
+    void setStatus(String nodeUUID, String status);
 }

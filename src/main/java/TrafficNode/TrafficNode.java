@@ -1,8 +1,8 @@
 package TrafficNode;
 
-import TrafficUser.EPriority;
+import Config.AmpelStatus;
+import Config.EPriority;
 import TrafficUser.ITrafficUser;
-import TrafficUser.TrafficUser;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -14,13 +14,14 @@ public class TrafficNode implements ITrafficNode {
     Map<String, TrafficUserMock> trafficUserMap;
     String uuid;
 
-    String defaultUUID;
+    String defaultRoute;
 
 
 
 
     TrafficNodeInvokeStub trafficNodeInvokeStub;
     private EPriority state;
+    private List<NeighborNodes> inStreamNodes;
 
     public TrafficNode(String uuid, TrafficNodeInvokeStub trafficNodeInvokeStub, Map<String, NeighborNodes> trafficNodes) {
         this.trafficNodes = new HashMap<>();
@@ -28,6 +29,7 @@ public class TrafficNode implements ITrafficNode {
         this.uuid = uuid;
         this.trafficNodeInvokeStub = trafficNodeInvokeStub;
         this.trafficNodes = trafficNodes;
+        this.defaultRoute = this.getDefaultRoute();
     }
 
     public void init() {
@@ -39,21 +41,42 @@ public class TrafficNode implements ITrafficNode {
         new Thread(() -> {
             String status = "RED";
             while (true) {
+//                if (this.trafficNodes.size() > 0 && this.trafficUserMap.size() > 0) {
+//                    String [] user = this.trafficUserMap.keySet().toArray(new String[0]);
+//                    status = "GREEN";
+//                    this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", status);
+//                    for (int i = 0; i < (int) (user.length * Math.random()); i++) {
+//                        TrafficUserMock temp = this.trafficUserMap.get(user[(int) (Math.random() * user.length)]);
+//                        if (temp != null) {
+//                            this.setNextTrafficNodeForUser(temp.getUuid());
+//                        }
+//                        this.sleep(100);
+//                    }
+//                    status = "RED";
+//                    this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", status);
+//                }
+//                this.sleep((long)(Math.random() * 5000));
+
                 if (this.trafficNodes.size() > 0 && this.trafficUserMap.size() > 0) {
                     String [] user = this.trafficUserMap.keySet().toArray(new String[0]);
-                    status = "GREEN";
-                    this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", status);
-                    for (int i = 0; i < (int) (user.length * Math.random()); i++) {
-                        TrafficUserMock temp = this.trafficUserMap.get(user[(int) (Math.random() * user.length)]);
-                        if (temp != null) {
-                            this.setNextTrafficNodeForUser(temp.getUuid());
+                    for (String u: user) {
+                        TrafficUserMock userMock = this.trafficUserMap.get(u);
+                        userMock.refreshDistance();
+                        NeighborNodes lastNode = this.trafficNodes.get(userMock.getLastTrafficNode());
+                        if (lastNode.getDistance() - userMock.getDistance() < 1) {
+                            if (lastNode.getStatus().equals(AmpelStatus.RED) && userMock.getPriority().equals(EPriority.NORMAL)) {
+                                this.trafficNodeInvokeStub.setTempo(ITrafficUser.class.getName() + "/" + u, 0);
+                            } else if (lastNode.getStatus().equals(AmpelStatus.GREEN)) {
+                                this.setNextTrafficNodeForUser(u);
+                            } else if (userMock.getPriority().equals(EPriority.EMERGENCY)) {
+                                this.setNextTrafficNodeForUser(u);
+                            }
+                        } else {
+                            this.trafficNodeInvokeStub.setTempo(ITrafficUser.class.getName() + "/" + u, 16);
                         }
-                        this.sleep(100);
                     }
-                    status = "RED";
-                    this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", status);
                 }
-                this.sleep((long)(Math.random() * 5000));
+                sleep(100);
             }
         }).start();
     }
@@ -145,35 +168,59 @@ public class TrafficNode implements ITrafficNode {
         this.trafficNodes.get(trafficNodeUUID).setAmount(amount);
     }
 
-    public String getNextTrafficNode() {
-        // TODO check default route
+    @Override
+    public void setStatus(String nodeUUID, String status) {
+        this.trafficNodes.get(nodeUUID).setStatus(status);
+    }
+
+    private String getDefaultRoute() {
         String defaultRoute = "";
+        this.inStreamNodes = new ArrayList<>();
         Iterator<NeighborNodes> iterator = this.trafficNodes.values().iterator();
         while (iterator.hasNext()) {
             NeighborNodes next = iterator.next();
-            if (next.isDefault && next.getsourceUUID().equals(this.uuid)) {
+            if (next.getIsDefault() && next.getsourceUUID().equals(this.uuid) && defaultRoute.equalsIgnoreCase("")) {
                 defaultRoute = next.getDestinationUUID();
-                break;
+            }
+            if (next.getDestinationUUID().equals(this.uuid)) {
+                this.inStreamNodes.add(next);
             }
         }
-        String finalDefaultRoute = defaultRoute;
+        return defaultRoute;
+    }
+
+
+    public String getNextTrafficNode() {
+
+        String finalDefaultRoute = this.defaultRoute;
 
         Set<Map.Entry<String, TrafficUserMock>> entrySet = this.trafficUserMap.entrySet();
-        /**
-         *
-        if (this.trafficNodes.get(defaultRoute).weight * this.trafficUserMap.entrySet().stream().filter(x -> x.getValue().getNextTrafficNode().equals(finalDefaultRoute)).count() > 100)
+
+        if (this.trafficNodes.get(finalDefaultRoute).getWorkloud() >= 20)
         {
             // TODO ErsatzWeg -> ask next Route with lowest weight
 
-            return defaultRoute;
+            Iterator<NeighborNodes> iterator = this.trafficNodes.values().iterator();
+            while (iterator.hasNext()) {
+                NeighborNodes next = iterator.next();
+                if (next.getWeight() * next.getAmount() < 20) {
+                    finalDefaultRoute = next.getDestinationUUID();
+                }
+                if (next.getDestinationUUID().equals(this.uuid)) {
+                    this.inStreamNodes.add(next);
+                }
+            }
+            if (finalDefaultRoute.equalsIgnoreCase(this.defaultRoute)) {
+                finalDefaultRoute = this.trafficNodes.entrySet().stream().min(Comparator.comparing(Map.Entry::getValue)).get().getKey();
+            }
+            return finalDefaultRoute;
         }
         else
         {
-            return defaultRoute;
+            return finalDefaultRoute;
         }
         // TODO if default full check alternative
-         */
-        return defaultRoute;
+
     }
 
     public void setNextTrafficNodeForUser(String trafficUserUUID) {

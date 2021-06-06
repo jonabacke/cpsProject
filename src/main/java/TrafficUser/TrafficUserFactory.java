@@ -2,6 +2,7 @@ package TrafficUser;
 
 import ComModule.Middleware;
 import ComModule.SkeletonStub;
+import Config.EPriority;
 import Config.LogFormatter;
 
 import java.util.UUID;

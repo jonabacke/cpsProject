@@ -1,9 +1,9 @@
 package TrafficUser;
 
 import Config.ConfigFile;
+import Config.EPriority;
 import TrafficNode.ITrafficNode;
 
-import java.util.UUID;
 import java.util.logging.Logger;
 
 public class TrafficUser implements ITrafficUser {
@@ -23,6 +23,7 @@ public class TrafficUser implements ITrafficUser {
         this.priority = priority;
         this.finalTrafficNode = finalTrafficNode;
         this.trafficUserInvokeStub = trafficUserInvokeStub;
+        this.lastTrafficNode = "";
         this.setTempo(0);
         this.calcNextDestination();
         this.test();
@@ -33,7 +34,7 @@ public class TrafficUser implements ITrafficUser {
         this.signIn();
         new Thread(() -> {
             while (true) {
-                this.trafficUserInvokeStub.setTempo(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid, Math.random() * 10 + 50);
+                this.trafficUserInvokeStub.setTempo(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid, this.tempo);
                 try {
                     Thread.sleep((int) (Math.random() * 2000));
                 } catch (InterruptedException e) {
@@ -71,6 +72,8 @@ public class TrafficUser implements ITrafficUser {
         result += ConfigFile.SEPARATOR_NETWORK_CONCAT;
         result += this.nextTrafficNode;
         result += ConfigFile.SEPARATOR_NETWORK_CONCAT;
+        result += this.lastTrafficNode;
+        result += ConfigFile.SEPARATOR_NETWORK_CONCAT;
         result += this.finalTrafficNode;
         return result;
     }
@@ -88,6 +91,7 @@ public class TrafficUser implements ITrafficUser {
         logger.info("Set new Goal " + trafficNodeUUID);
         if (!this.nextTrafficNode.equalsIgnoreCase(trafficNodeUUID)) {
             this.signOut();
+            this.lastTrafficNode = this.nextTrafficNode;
             this.nextTrafficNode = trafficNodeUUID;
             this.signIn();
         }
