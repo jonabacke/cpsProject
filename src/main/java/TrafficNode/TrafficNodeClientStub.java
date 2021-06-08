@@ -63,4 +63,9 @@ public class TrafficNodeClientStub implements ITrafficNode {
     public void setWorkload(String trafficNodeUUID, int amount) {
         middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), trafficNodeUUID, amount);
     }
+
+    @Override
+    public void setStatus(String nodeUUID, String status) {
+        middlewareInvoke.invoke(this.name, new Throwable().getStackTrace()[0].getMethodName(), nodeUUID, status);
+    }
 }

@@ -27,7 +27,6 @@ public class App {
         Logger.getGlobal().getParent().getHandlers()[0].setFormatter(new LogFormatter());
         if (args.length > 0) new App(Integer.getInteger(args[0]));
         else new App(0);
-
     }
 
     public App(Integer amount) {
@@ -51,7 +50,7 @@ public class App {
         sleep(STARTUP_DELAY);
         new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N7", "StreetN7_N1.json", "StreetN6_N7.json")).start();
 
-        for (int i = 0; i < 10 * 2; i++) {
+        for (int i = 0; i < 100; i++) {
             int finalI = i;
             new Thread(() -> this.buildProcess(TrafficUserFactory.class.getName(), "" + finalI)).start();
             sleep(STARTUP_DELAY);

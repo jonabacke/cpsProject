@@ -23,7 +23,7 @@ public class MqttReceive {
         this.retain = service.isRetain();
         this.topic = service.getServiceName();
         try {
-            this.publisher = new MqttClient(ConfigFile.BROKERADDRESS, uuid);
+            this.publisher = new MqttClient(ConfigFile.BROKER_ADDRESS, uuid);
         } catch (MqttException e) {
             e.printStackTrace();
         }
@@ -31,7 +31,7 @@ public class MqttReceive {
         options.setAutomaticReconnect(true);
         options.setCleanSession(true);
         options.setConnectionTimeout(10);
-        options.setMaxInflight(1);
+        options.setMaxInflight(10);
         logger.info("listen on: " + this.topic);
         publisher.setCallback(new MqttCallback() {
             @Override
@@ -41,8 +41,6 @@ public class MqttReceive {
 
             @Override
             public void messageArrived(String s, MqttMessage mqttMessage) {
-                logger.info("received something");
-                logger.info(new String(mqttMessage.getPayload()));
                 callBack(new String(mqttMessage.getPayload()));
             }
 
@@ -66,7 +64,7 @@ public class MqttReceive {
 
     public void callBack(String msg) {
         Wrapper wrapper = Marshaller.unpack(msg);
-        Logger.getGlobal().info("Receive msg: " + msg);
+        Logger.getGlobal().info("Receive msg: " + msg + " on " + wrapper.getClassName());
         stub.call(wrapper.getMethodName(), wrapper.getObjectParams(), wrapper.getClassParams());
     }
 }

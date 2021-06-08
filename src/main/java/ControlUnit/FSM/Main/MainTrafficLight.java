@@ -1,11 +1,11 @@
-package Main;
+package ControlUnit.FSM.Main;
 
-import logic.MainControlGreenRed;
+import ControlUnit.FSM.logic.ControlTrafficLight;
 
-public class MainGreenRed {
+public class MainTrafficLight {
 
     public static void main(String[] args) {
-        MainControlGreenRed main = new MainControlGreenRed();
+        ControlTrafficLight main = new ControlTrafficLight();
         main.start();
 
         System.out.println(main);

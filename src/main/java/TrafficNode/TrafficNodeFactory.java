@@ -16,6 +16,8 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,7 +57,8 @@ public class TrafficNodeFactory {
         double distance = 0;
         double weight = 0;
         boolean isDefault = false;
-        Map<String, NeighborNodes> neighborNodesMap = new HashMap<>();
+        ConcurrentMap<String, NeighborNodes> neighborNodesGoing = new ConcurrentHashMap<>();
+        ConcurrentMap<String, NeighborNodes> neighborNodesComing = new ConcurrentHashMap<>();
 
         for (int i = 0; i < streets.length; i++) {
             try {
@@ -72,9 +75,9 @@ public class TrafficNodeFactory {
             }
 
             if (sourceUUID.equals(uuid)) {
-                neighborNodesMap.put(destinationUUID, new NeighborNodes(distance, weight, isDefault, sourceUUID, destinationUUID));
+                neighborNodesGoing.put(destinationUUID, new NeighborNodes(distance, weight, isDefault, sourceUUID, destinationUUID));
             } else {
-                neighborNodesMap.put(sourceUUID, new NeighborNodes(distance, weight, isDefault, sourceUUID, destinationUUID));
+                neighborNodesComing.put(sourceUUID, new NeighborNodes(distance, weight, isDefault, sourceUUID, destinationUUID));
             }
 
         }
@@ -89,7 +92,7 @@ public class TrafficNodeFactory {
         this.trafficNodeInvoke = new TrafficNodeInvokeStub(this.middleware);
 
         // Build Object
-        this.trafficNode = new TrafficNode(uuid, this.trafficNodeInvoke, neighborNodesMap);
+        this.trafficNode = new TrafficNode(uuid, this.trafficNodeInvoke, neighborNodesComing, neighborNodesGoing);
 
         // Build CallStub
             // TrafficUser
@@ -101,4 +104,7 @@ public class TrafficNodeFactory {
         this.trafficNode.init();
     }
 
+    public TrafficNode getTrafficNode() {
+        return trafficNode;
+    }
 }

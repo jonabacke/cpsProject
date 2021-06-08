@@ -1,19 +1,16 @@
-package logic;
+package ControlUnit.FSM.logic;
 
-import stm.State;
-import stm.Transition;
+import Config.TrafficLightState;
+import ControlUnit.FSM.stm.State;
+import ControlUnit.FSM.stm.Transition;
 
-enum Status
-{
-    GREEN, RED,;
-}
 
-public class MainControlGreenRed {
-    public String message = "";
+public class ControlGreenRed {
+    private String message = "";
 
-    public Status status = Status.RED;
+    private TrafficLightState status = TrafficLightState.RED;
 
-    public State currentState = null;
+    private State currentState = null;
 
     /**
      * Der initiale Zustand, wird im Konstruktor gesetzt
@@ -23,7 +20,7 @@ public class MainControlGreenRed {
     /**
      * Erzeugt die States mit Transitionen.
      */
-    public MainControlGreenRed() {
+    public ControlGreenRed() {
 
         // zuerst alle States mit Verhalten (Behavior)
         State initializing = new State("initializing") {
@@ -42,7 +39,7 @@ public class MainControlGreenRed {
         State green = new State("green") {
             @Override
             public void entry() {
-                status = Status.GREEN;
+                status = TrafficLightState.GREEN;
                 printGreenLight();
                 //publish Green
             }
@@ -55,7 +52,7 @@ public class MainControlGreenRed {
             @Override
             public void entry() {
                 printRedLight();
-                status = Status.RED;
+                status = TrafficLightState.RED;
                 //publish red
             }
 
@@ -69,8 +66,8 @@ public class MainControlGreenRed {
         // und nun alle Transitionen:
 
         new Transition(initializing, red).when(() -> true);
-        new Transition(red, green).when(() -> message == "green");
-        new Transition(green, red).when(() -> message == "red");
+        new Transition(red, green).when(() -> message.equalsIgnoreCase("green"));
+        new Transition(green, red).when(() -> message.equalsIgnoreCase("red"));
 
         // TODO ergÃ¤nzen Sie hier die fehlenden Transitionen
     }
@@ -117,6 +114,22 @@ public class MainControlGreenRed {
         }
         currentState.do_();
         return changed;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public TrafficLightState getStatus() {
+        return status;
+    }
+
+    public State getCurrentState() {
+        return currentState;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
 }

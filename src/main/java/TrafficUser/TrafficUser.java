@@ -23,7 +23,7 @@ public class TrafficUser implements ITrafficUser {
         this.priority = priority;
         this.finalTrafficNode = finalTrafficNode;
         this.trafficUserInvokeStub = trafficUserInvokeStub;
-        this.lastTrafficNode = "";
+        this.lastTrafficNode = "N7";
         this.setTempo(0);
         this.calcNextDestination();
         this.test();
@@ -32,16 +32,19 @@ public class TrafficUser implements ITrafficUser {
     private void test() {
         this.nextTrafficNode = "N1";
         this.signIn();
+
         new Thread(() -> {
             while (true) {
                 this.trafficUserInvokeStub.setTempo(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid, this.tempo);
                 try {
-                    Thread.sleep((int) (Math.random() * 2000));
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
+
+
     }
 
     public void signIn() {
@@ -55,6 +58,7 @@ public class TrafficUser implements ITrafficUser {
     @Override
     public void setTempo(double tempo) {
         this.tempo = tempo;
+        this.trafficUserInvokeStub.setTempo(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid, this.tempo);
     }
 
     @Override
@@ -88,7 +92,7 @@ public class TrafficUser implements ITrafficUser {
 
     @Override
     public void setNextTrafficNode(String trafficNodeUUID) {
-        logger.info("Set new Goal " + trafficNodeUUID);
+        logger.warning(this.uuid + " set new Goal " + trafficNodeUUID);
         if (!this.nextTrafficNode.equalsIgnoreCase(trafficNodeUUID)) {
             this.signOut();
             this.lastTrafficNode = this.nextTrafficNode;

@@ -1,6 +1,6 @@
 package Config;
 
-public enum AmpelStatus {
+public enum TrafficLightState {
 
     GREEN, RED
 }

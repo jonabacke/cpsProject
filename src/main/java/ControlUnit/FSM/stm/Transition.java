@@ -1,4 +1,4 @@
-package stm;
+package ControlUnit.FSM.stm;
 
 import java.util.function.Supplier;
 

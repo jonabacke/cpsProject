@@ -1,30 +1,30 @@
-package logic;
+package ControlUnit.FSM.logic;
 
 //import lift.boundary.Doors;
 //import lift.boundary.Requests;
-import stm.State;
-import stm.Transition;
+import Config.ConfigFile;
+import ControlUnit.FSM.stm.State;
+import ControlUnit.FSM.stm.Transition;
 
 
-public class MainControlTrafficLight {
+public class ControlTrafficLight {
 
 
-    public String message = "";
-    boolean greenLight = true;
-    boolean redLight = true;
-    public int counter = 0 ;
-
-    public State currentState = null;
+    private String message = "";
+    private boolean greenLight = true;
+    private boolean redLight = true;
+    private int counter = 0 ;
+    private State currentState = null;
 
     /**
      * Der initiale Zustand, wird im Konstruktor gesetzt
      */
-    final State initialState;
+    private final State initialState;
 
     /**
      * Erzeugt die States mit Transitionen.
      */
-    public MainControlTrafficLight() {
+    public ControlTrafficLight() {
 
         // zuerst alle States mit Verhalten (Behavior)
         State initializing = new State("initializing") {
@@ -40,7 +40,7 @@ public class MainControlTrafficLight {
 
         initialState = initializing;
 
-        State normal = new State("normal") {
+        State normal = new State(ConfigFile.NORMAL_MESSAGE) {
             @Override
             public void entry() {
                 printNormalMode();
@@ -50,7 +50,7 @@ public class MainControlTrafficLight {
             public void do_() {
             }
         };
-        State prio = new State("prio") {
+        State prio = new State(ConfigFile.PRIO_MESSAGE) {
             @Override
             public void entry() {
                 printPrioMode();
@@ -60,7 +60,7 @@ public class MainControlTrafficLight {
             public void do_() {
             }
         };
-        State stau = new State("stau") {
+        State stau = new State(ConfigFile.STAU_MESSAGE) {
             @Override
             public void entry() {
                 printStauMode();
@@ -97,12 +97,12 @@ public class MainControlTrafficLight {
         // und nun alle Transitionen:
 
         new Transition(initializing, normal).when(() -> true);
-        new Transition(normal, stau).when(() -> message == "stau");
-        new Transition(normal, prio).when(() -> message == "prio");
-        new Transition(stau, normal).when(() -> message == "normal");
-        new Transition(stau, prio).when(() -> message == "prio");
-        new Transition(prio, normal).when(() -> message == "normal");
-        new Transition(prio, green).when(() -> message == "green");
+        new Transition(normal, stau).when(()    -> message.equalsIgnoreCase(ConfigFile.STAU_MESSAGE));
+        new Transition(normal, prio).when(()    -> message.equalsIgnoreCase(ConfigFile.PRIO_MESSAGE));
+        new Transition(stau, normal).when(()    -> message.equalsIgnoreCase(ConfigFile.NORMAL_MESSAGE));
+        new Transition(stau, prio).when(()      -> message.equalsIgnoreCase(ConfigFile.PRIO_MESSAGE));
+        new Transition(prio, normal).when(()    -> message.equalsIgnoreCase(ConfigFile.NORMAL_MESSAGE));
+        new Transition(prio, stau).when(()      -> message.equalsIgnoreCase(ConfigFile.STAU_MESSAGE));
 
         // TODO ergÃ¤nzen Sie hier die fehlenden Transitionen
     }
@@ -157,6 +157,30 @@ public class MainControlTrafficLight {
         }
         currentState.do_();
         return changed;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public boolean isGreenLight() {
+        return greenLight;
+    }
+
+    public boolean isRedLight() {
+        return redLight;
+    }
+
+    public int getCounter() {
+        return counter;
+    }
+
+    public State getCurrentState() {
+        return currentState;
     }
 
 }

@@ -1,10 +1,10 @@
-package Main;
+package ControlUnit.FSM.Main;
 
-import logic.MainControlGreenRed;
+import ControlUnit.FSM.logic.ControlGreenRed;
 
 public class MainGreenRedTest {
     public static void main(String[] args) {
-        MainControlGreenRed main = new MainControlGreenRed();
+        ControlGreenRed main = new ControlGreenRed();
         main.start();
 
         System.out.println(main);
@@ -23,7 +23,7 @@ public class MainGreenRedTest {
             if(main.step()){
                 System.out.println(main);
             }
-            main.message = buffer[i];
+            main.setMessage(buffer[i]);
         }
 
 

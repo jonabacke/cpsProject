@@ -1,11 +1,11 @@
-package Main;
+package ControlUnit.FSM.Main;
 
-import logic.MainControlTrafficLight;
+import ControlUnit.FSM.logic.ControlTrafficLight;
 
 public class MainTrafficLightTest {
 
     public static void main(String[] args) {
-        MainControlTrafficLight main = new MainControlTrafficLight();
+        ControlTrafficLight main = new ControlTrafficLight();
         main.start();
 
         System.out.println(main);
@@ -27,7 +27,7 @@ public class MainTrafficLightTest {
             if(main.step()){
                 System.out.println(main);
             }
-            main.message = buffer[i];
+            main.setMessage(buffer[i]);
         }
 
 

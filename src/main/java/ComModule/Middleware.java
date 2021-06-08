@@ -24,7 +24,6 @@ public class Middleware implements IMiddlewareInvoke, IMiddlewareRegisterService
 
     @Override
     public void invoke(String serviceName, String functionName, Object ...paramValues) {
-        logger.info(serviceName);
         String msg;
         if (!serviceName.contains("frontend")) {
             msg = Marshaller.pack(getClassByName(serviceName), functionName, paramValues);

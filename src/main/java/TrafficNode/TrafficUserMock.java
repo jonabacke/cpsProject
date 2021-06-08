@@ -98,7 +98,7 @@ public class TrafficUserMock {
     }
 
     public double getTimeOnStreetInSec() {
-        return (System.currentTimeMillis() - this.getArriveTime()) / 1000;
+        return (double) (System.currentTimeMillis() - this.getArriveTime()) / 1000;
     }
 
     public double getDistance() {
@@ -106,7 +106,7 @@ public class TrafficUserMock {
     }
 
     public void refreshDistance() {
-        this.distance = this.distance + this.tempo * this.lastDistanceTime;
-        this.lastDistanceTime = System.currentTimeMillis() / 1000;
+        this.distance = this.tempo * this.getTimeOnStreetInSec();
+        this.lastDistanceTime = (double) System.currentTimeMillis() / 1000;
     }
 }

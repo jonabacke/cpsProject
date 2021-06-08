@@ -11,7 +11,7 @@ public class MqttSend {
 
     public MqttSend(String uuid) {
         try {
-            this.publisher = new MqttClient(ConfigFile.BROKERADDRESS, uuid);
+            this.publisher = new MqttClient(ConfigFile.BROKER_ADDRESS, uuid);
         } catch (MqttException e) {
             e.printStackTrace();
         }
