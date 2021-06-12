@@ -1,5 +1,6 @@
 package TrafficNode;
 
+import ComModule.FrontendClientStub;
 import ComModule.Middleware;
 import TrafficUser.TrafficUserClientStub;
 
@@ -9,6 +10,7 @@ public class TrafficNodeInvokeStub implements ITrafficNodeInvoke {
     private String oldTargetName;
     private TrafficNodeClientStub trafficNodeService;
     private TrafficUserClientStub trafficUserService;
+    private FrontendClientStub frontendClientStub;
 
     public TrafficNodeInvokeStub(Middleware middleware) {
         this.middleware = middleware;
@@ -66,11 +68,11 @@ public class TrafficNodeInvokeStub implements ITrafficNodeInvoke {
     }
 
     public void publishVisualizationData(String targetName, String msg) {
-        if (this.trafficUserService == null || !this.oldTargetName.equals(targetName)) {
-            this.trafficUserService = new TrafficUserClientStub(this.middleware, targetName);
+        if (this.frontendClientStub == null || !this.oldTargetName.equals(targetName)) {
+            this.frontendClientStub = new FrontendClientStub(this.middleware, targetName);
             this.oldTargetName = targetName;
         }
-        this.trafficUserService.publishVisualizationData(msg);
+        this.frontendClientStub.publishVisualizationData(msg);
     }
 
 }

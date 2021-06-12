@@ -10,6 +10,10 @@ import java.util.logging.Logger;
 public class NeighborNodes implements Comparable<NeighborNodes>
 {
     private final Logger logger = Logger.getGlobal();
+
+    private TrafficNodeInvokeStub trafficNodeInvokeStub;
+
+    private String uuid;
     // Direction of Street
     private final String sourceUUID;
     private final String destinationUUID;
@@ -25,9 +29,9 @@ public class NeighborNodes implements Comparable<NeighborNodes>
     private ControlTrafficLight controlTrafficLight;
     private int priorityCounter = 0;
 
-    public NeighborNodes(double distance, double weight, boolean isDefault, String sourceUUID, String destinationUUID)
+    public NeighborNodes(String uuid, TrafficNodeInvokeStub trafficNodeInvokeStub, double distance, double weight, boolean isDefault, String sourceUUID, String destinationUUID)
     {
-        this.distance = distance;
+        this.distance = 300;
         this.weight = weight;
         this.isDefault = isDefault;
         this.sourceUUID = sourceUUID;
@@ -41,6 +45,10 @@ public class NeighborNodes implements Comparable<NeighborNodes>
         this.controlTrafficLight = new ControlTrafficLight();
         this.controlTrafficLight.start();
 
+        this.trafficNodeInvokeStub = trafficNodeInvokeStub;
+        this.uuid = uuid;
+
+        this.calcWorkload();
         this.logger.info(this.controlTrafficLight.toString() + " from " + this.sourceUUID + " to " + this.destinationUUID);
     }
 
@@ -48,6 +56,7 @@ public class NeighborNodes implements Comparable<NeighborNodes>
         this.controlGreenRed.setMessage(ConfigFile.GREEN_MESSAGE);
         if (this.controlGreenRed.step()) {
             logger.info(this.controlGreenRed.getCurrentState().toString() + " from " + this.sourceUUID + " to " + this.destinationUUID);
+            this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/" + this.getSourceUUID() + this.getDestinationUUID() + "/status", ConfigFile.GREEN_MESSAGE);
         }
     }
 
@@ -55,20 +64,33 @@ public class NeighborNodes implements Comparable<NeighborNodes>
         this.controlGreenRed.setMessage(ConfigFile.RED_MESSAGE);
         if (this.controlGreenRed.step()) {
             logger.info(this.controlGreenRed.getCurrentState().toString() + " from " + this.sourceUUID + " to " + this.destinationUUID);
+            this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/" + this.getSourceUUID() + this.getDestinationUUID() + "/status", ConfigFile.RED_MESSAGE);
         }
     }
 
-    public void setPriority() {
-        this.controlTrafficLight.setMessage(ConfigFile.PRIO_MESSAGE);
-        if(this.controlTrafficLight.step()){
-            logger.info(this.controlTrafficLight.getCurrentState().toString() + " from " + this.sourceUUID + " to " + this.destinationUUID);
+    public void setPriority(double tempo) {
+        long time = 0;
+        if (tempo > 1) {
+            time = Math.max(((int) (this.distance / tempo) - 1) * 1000, ConfigFile.CYCLE_TIME); // Berechne Zeit bis Emergency an Ampel - 1 sek für umschalten
         }
+        long finalTime = time;
+        new Thread(() -> {
+            try {
+                Thread.sleep(finalTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            this.controlTrafficLight.setMessage(ConfigFile.PRIO_MESSAGE);
+            if(this.controlTrafficLight.step()){
+                logger.info(this.controlTrafficLight.getCurrentState().toString() + " from " + this.sourceUUID + " to " + this.destinationUUID);
+                this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/" + this.getSourceUUID() + this.getDestinationUUID() + "/mode", ConfigFile.PRIO_MESSAGE);
+            }
+        }).start();
+
+
     }
 
-    public void incrementPriority() {
-        this.priorityCounter ++;
-        this.setPriority();
-    }
+
 
     public void decrementPriority() {
         this.priorityCounter --;
@@ -81,6 +103,7 @@ public class NeighborNodes implements Comparable<NeighborNodes>
         this.controlTrafficLight.setMessage(ConfigFile.STAU_MESSAGE);
         if(this.controlTrafficLight.step()){
             logger.info(this.controlTrafficLight.getCurrentState().toString() + " from " + this.sourceUUID + " to " + this.destinationUUID);
+            this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/" + this.getSourceUUID() + this.getDestinationUUID() + "/mode", ConfigFile.STAU_MESSAGE);
         }
     }
 
@@ -88,6 +111,7 @@ public class NeighborNodes implements Comparable<NeighborNodes>
         this.controlTrafficLight.setMessage(ConfigFile.NORMAL_MESSAGE);
         if(this.controlTrafficLight.step()){
             logger.info(this.controlTrafficLight.getCurrentState().toString() + " from " + this.sourceUUID + " to " + this.destinationUUID);
+            this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/" + this.getSourceUUID() + this.getDestinationUUID() + "/mode", ConfigFile.NORMAL_MESSAGE);
         }
     }
 
@@ -127,10 +151,12 @@ public class NeighborNodes implements Comparable<NeighborNodes>
     }
 
     public void calcWorkload() {
+        assert this.amount > 0;
         this.workload = this.amount * this.weight;
-        if (workload > ConfigFile.WORKLOAD_THRESHOLD && !this.controlTrafficLight.getCurrentState().equals(ConfigFile.PRIO_MESSAGE)) {
+        this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/" + this.getSourceUUID() + this.getDestinationUUID() + "/amount", "" + this.amount);
+        if (workload > ConfigFile.WORKLOAD_THRESHOLD_UP && !this.controlTrafficLight.getCurrentState().equals(ConfigFile.PRIO_MESSAGE)) {
             this.setStau();
-        } else if (!this.controlTrafficLight.getCurrentState().equals(ConfigFile.PRIO_MESSAGE)) {
+        } else if (!this.controlTrafficLight.getCurrentState().equals(ConfigFile.PRIO_MESSAGE) && workload < ConfigFile.WORKLOAD_THRESHOLD_DOWN) {
             this.setNormal();
         }
     }
@@ -157,7 +183,7 @@ public class NeighborNodes implements Comparable<NeighborNodes>
 
     @Override
     public int compareTo(NeighborNodes o) {
-        return this.workload.compareTo(o.workload);
+        return this.workload.compareTo(o.getWorkload());
     }
 
 }

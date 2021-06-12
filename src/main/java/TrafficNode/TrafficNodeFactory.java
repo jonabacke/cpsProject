@@ -60,6 +60,15 @@ public class TrafficNodeFactory {
         ConcurrentMap<String, NeighborNodes> neighborNodesGoing = new ConcurrentHashMap<>();
         ConcurrentMap<String, NeighborNodes> neighborNodesComing = new ConcurrentHashMap<>();
 
+        this.retain = false;
+        this.qos = 0;
+
+        // Build Middleware
+        this.middleware = new Middleware(this.qos, this.retain, uuid);
+
+        // Build InvokeStub
+        this.trafficNodeInvoke = new TrafficNodeInvokeStub(this.middleware);
+
         for (int i = 0; i < streets.length; i++) {
             try {
                 Reader reader = Files.newBufferedReader(Paths.get("src/main/java/Config/" + streets[i]));
@@ -75,21 +84,12 @@ public class TrafficNodeFactory {
             }
 
             if (sourceUUID.equals(uuid)) {
-                neighborNodesGoing.put(destinationUUID, new NeighborNodes(distance, weight, isDefault, sourceUUID, destinationUUID));
+                neighborNodesGoing.put(destinationUUID, new NeighborNodes(uuid, this.trafficNodeInvoke, distance, weight, isDefault, sourceUUID, destinationUUID));
             } else {
-                neighborNodesComing.put(sourceUUID, new NeighborNodes(distance, weight, isDefault, sourceUUID, destinationUUID));
+                neighborNodesComing.put(sourceUUID, new NeighborNodes(uuid, this.trafficNodeInvoke, distance, weight, isDefault, sourceUUID, destinationUUID));
             }
 
         }
-
-        this.retain = false;
-        this.qos = 0;
-
-        // Build Middleware
-        this.middleware = new Middleware(this.qos, this.retain, uuid);
-
-        // Build InvokeStub
-        this.trafficNodeInvoke = new TrafficNodeInvokeStub(this.middleware);
 
         // Build Object
         this.trafficNode = new TrafficNode(uuid, this.trafficNodeInvoke, neighborNodesComing, neighborNodesGoing);

@@ -10,15 +10,18 @@ public class ConfigFile {
     public final static String RECEIVE = "receive";
     public final static String ERROR_RECEIVE = "errorReceive";
     public final static String RECEIVE_PUBLISH_INFORMATION = "receivePublishedInformation";
-    public final static int WORKLOAD_THRESHOLD = 5;
+    public final static int WORKLOAD_THRESHOLD_UP = 50;
+    public final static int WORKLOAD_THRESHOLD_DOWN = 45;
     public final static boolean LOG = false;
     public final static String BROKER_ADDRESS = "tcp://localhost:1883";
     public final static long CYCLE_TIME = 1000;
     public final static String RED_MESSAGE = "RED";
     public final static String GREEN_MESSAGE = "GREEN";
-    public final static String STAU_MESSAGE = "stau";
-    public final static String NORMAL_MESSAGE = "normal";
-    public final static String PRIO_MESSAGE = "prio";
+    public final static String STAU_MESSAGE = "STAU";
+    public final static String NORMAL_MESSAGE = "NORMAL";
+    public final static String PRIO_MESSAGE = "PRIO";
+
+
 
 
 }

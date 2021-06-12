@@ -48,7 +48,7 @@ public class App {
         sleep(STARTUP_DELAY);
         new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N6", "StreetN6_N7.json", "StreetN4_N6.json", "StreetN5_N6.json")).start();
         sleep(STARTUP_DELAY);
-        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N7", "StreetN7_N1.json", "StreetN6_N7.json")).start();
+        new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N7", "StreetN7_N1.json", "StreetN6_N7.json", "StreetN5_N7.json")).start();
 
         for (int i = 0; i < 100; i++) {
             int finalI = i;

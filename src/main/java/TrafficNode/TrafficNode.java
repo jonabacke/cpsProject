@@ -21,11 +21,7 @@ public class TrafficNode implements ITrafficNode {
 
     String defaultRoute;
 
-
-
-
     TrafficNodeInvokeStub trafficNodeInvokeStub;
-    private EPriority state;
 
     public TrafficNode(String uuid, TrafficNodeInvokeStub trafficNodeInvokeStub, ConcurrentMap<String, NeighborNodes> trafficNodesComing, ConcurrentMap<String, NeighborNodes> trafficNodesGoing) {
         this.trafficNodesComing = new ConcurrentHashMap<>();
@@ -44,26 +40,10 @@ public class TrafficNode implements ITrafficNode {
         this.test();
     }
 
-    public void test() {
+    public synchronized void test() {
         new Thread(() -> {
             double priorityDistance = 0;
             while (true) {
-//                if (this.trafficNodes.size() > 0 && this.trafficUserMap.size() > 0) {
-//                    String [] user = this.trafficUserMap.keySet().toArray(new String[0]);
-//                    status = "GREEN";
-//                    this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", status);
-//                    for (int i = 0; i < (int) (user.length * Math.random()); i++) {
-//                        TrafficUserMock temp = this.trafficUserMap.get(user[(int) (Math.random() * user.length)]);
-//                        if (temp != null) {
-//                            this.setNextTrafficNodeForUser(temp.getUuid());
-//                        }
-//                        this.sleep(100);
-//                    }
-//                    status = "RED";
-//                    this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", status);
-//                }
-//                this.sleep((long)(Math.random() * 5000));
-
                 if (this.trafficNodesComing.size() > 0 && this.trafficUserMap.size() > 0) {
                     String [] user = this.trafficUserMap.keySet().toArray(new String[0]);
                     priorityDistance = Double.MAX_VALUE;
@@ -89,35 +69,57 @@ public class TrafficNode implements ITrafficNode {
                             } else if (userMock.getPriority().equals(EPriority.EMERGENCY)) {
                                 this.setNextTrafficNodeForUser(u);
                             }
-                        } else if (userMock.getTempo() != 16.0) {
-                            this.drive(u);
+                        } else {
+                            if (userMock.getPriority().equals(EPriority.EMERGENCY)) {
+                                this.drive(u, 14);
+                            } else {
+                                this.drive(u, this.calcTempo(lastNode));
+                            }
                         }
                     }
                 }
-                sleep(10);
+                sleep(100);
             }
         }).start();
     }
 
+    private synchronized double calcTempo(NeighborNodes node) {
+        double result = 0;
+        if (node.getWorkload() < 2) {
+            result = 14;
+        } else if (node.getWorkload() < 4) {
+            result = 10;
+        } else if (node.getWorkload() < 6) {
+            result = 8;
+        } else if (node.getWorkload() < 8) {
+            result = 6;
+        } else if (node.getWorkload() < 10) {
+            result = 4;
+        } else {
+            result = 2;
+        }
+        return result;
+    }
+
     // TODO Check if its not needed
     @Override
-    public void signInTrafficNode(String trafficNodeUUID, double distance, double weight, boolean isDefault, String uuid) {
+    public synchronized void signInTrafficNode(String trafficNodeUUID, double distance, double weight, boolean isDefault, String uuid) {
         logger.info("signIn: " + trafficNodeUUID);
         if (!this.trafficNodesComing.containsKey(trafficNodeUUID)) {
             this.registerOnNeighborTrafficNodes();
         }
-        this.trafficNodesComing.put(trafficNodeUUID, new NeighborNodes(distance, weight, isDefault, uuid, null));
+        this.trafficNodesComing.put(trafficNodeUUID, new NeighborNodes(this.uuid, this.trafficNodeInvokeStub, distance, weight, isDefault, uuid, null));
     }
 
     // TODO Check if its waste
     @Override
-    public void signOutTrafficNode(String trafficNodeUUID) {
+    public synchronized void signOutTrafficNode(String trafficNodeUUID) {
         logger.info("signOut: " + trafficNodeUUID);
         this.trafficNodesComing.remove(trafficNodeUUID);
     }
 
     @Override
-    public void signInTrafficUser(String trafficUserUUID, String trafficUserNetworkString) {
+    public synchronized void signInTrafficUser(String trafficUserUUID, String trafficUserNetworkString) {
         logger.info("signIn: " + trafficUserUUID);
 
         TrafficUserMock trafficUser = new TrafficUserMock(trafficUserNetworkString);
@@ -125,7 +127,7 @@ public class TrafficNode implements ITrafficNode {
         this.trafficUserMap.put(trafficUserUUID, trafficUser);
 
         if (this.trafficUserMap.get(trafficUserUUID).getPriority().equals(EPriority.EMERGENCY)) {
-            this.trafficNodesComing.get(trafficUser.getLastTrafficNode()).setPriority();
+            this.trafficNodesComing.get(trafficUser.getLastTrafficNode()).setPriority(trafficUser.getTempo());
         }
 
         this.trafficNodesComing.get(trafficUser.getLastTrafficNode()).incrementAmount();
@@ -141,7 +143,7 @@ public class TrafficNode implements ITrafficNode {
     }
 
     @Override
-    public void signOutTrafficUser(String trafficUserUUID) {
+    public synchronized void signOutTrafficUser(String trafficUserUUID) {
         logger.info("signOut: " + trafficUserUUID);
         if (this.trafficUserMap.get(trafficUserUUID).getPriority().equals(EPriority.EMERGENCY)) {
             this.trafficNodesComing.get(this.trafficUserMap.get(trafficUserUUID).getLastTrafficNode()).decrementPriority();
@@ -155,7 +157,7 @@ public class TrafficNode implements ITrafficNode {
     }
 
     @Override
-    public void setTempo(String trafficUserUUID, double tempo) {
+    public synchronized void setTempo(String trafficUserUUID, double tempo) {
         logger.info("Tempo: " + tempo);
         if (this.trafficUserMap.get(trafficUserUUID) == null) {
             logger.warning("Receiver ID: " + this.uuid);
@@ -170,29 +172,28 @@ public class TrafficNode implements ITrafficNode {
     }
 
     @Override
-    public void setPriority(String trafficUserUUID, String priority) {
+    public synchronized void setPriority(String trafficUserUUID, String priority) {
         logger.info("Priority: " + priority);
         if (priority.equals(EPriority.EMERGENCY.toString())) {
-            this.state = EPriority.SUPER;
             this.trafficNodeInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/status", priority);
         }
         this.trafficUserMap.get(trafficUserUUID).setPriority(EPriority.valueOf(priority));
     }
 
     @Override
-    public void setNextTrafficNode(String trafficUserUUID, String nextTrafficNode) {
+    public synchronized void setNextTrafficNode(String trafficUserUUID, String nextTrafficNode) {
         logger.info("NextTrafficNode: " + nextTrafficNode);
         this.trafficUserMap.get(trafficUserUUID).setNextTrafficNode(nextTrafficNode);
     }
 
     @Override
-    public void setFinalTrafficNode(String trafficUserUUID, String finalTrafficNode) {
+    public synchronized void setFinalTrafficNode(String trafficUserUUID, String finalTrafficNode) {
         logger.info("FinalTrafficNode: " + finalTrafficNode);
         this.trafficUserMap.get(trafficUserUUID).setFinalTrafficNode(finalTrafficNode);
     }
 
     @Override
-    public void setWorkload(String trafficNodeUUID, int amount) {
+    public synchronized void setWorkload(String trafficNodeUUID, int amount) {
         if (this.trafficNodesGoing.get(trafficNodeUUID) == null) {
             logger.warning("Receiver ID: " + this.uuid);
             logger.warning("Sender ID: " + trafficNodeUUID);
@@ -203,11 +204,11 @@ public class TrafficNode implements ITrafficNode {
     }
 
     @Override
-    public void setStatus(String nodeUUID, String status) {
+    public synchronized void setStatus(String nodeUUID, String status) {
         //this.trafficNodes.get(nodeUUID).setStatus(status);
     }
 
-    private String getDefaultRoute() {
+    private synchronized String getDefaultRoute() {
         String defaultRoute = "";
         Iterator<NeighborNodes> iterator = this.trafficNodesGoing.values().iterator();
         while (iterator.hasNext()) {
@@ -220,12 +221,16 @@ public class TrafficNode implements ITrafficNode {
     }
 
 
-    public String getNextTrafficNode() {
+    public synchronized String getNextTrafficNode() {
 
         String finalDefaultRoute = this.defaultRoute;
 
         Set<Map.Entry<String, TrafficUserMock>> entrySet = this.trafficUserMap.entrySet();
 
+        if (finalDefaultRoute.equalsIgnoreCase(this.defaultRoute)) {
+            finalDefaultRoute = this.trafficNodesGoing.entrySet().stream().min(Map.Entry.comparingByValue()).get().getKey();
+        }
+        /*
         if (this.trafficNodesGoing.get(finalDefaultRoute).getControlTrafficLight().getCurrentState().toString().equals(ConfigFile.STAU_MESSAGE))
         {
             Iterator<NeighborNodes> iterator = this.trafficNodesGoing.values().iterator();
@@ -239,14 +244,15 @@ public class TrafficNode implements ITrafficNode {
                 finalDefaultRoute = this.trafficNodesGoing.entrySet().stream().min(Map.Entry.comparingByValue()).get().getKey();
             }
         }
+        */
         return finalDefaultRoute;
     }
 
-    public void setNextTrafficNodeForUser(String trafficUserUUID) {
+    public synchronized void setNextTrafficNodeForUser(String trafficUserUUID) {
         this.trafficNodeInvokeStub.setNextTrafficNode(ITrafficUser.class.getName() + "/" + trafficUserUUID, this.getNextTrafficNode());
     }
 
-    public void registerOnNeighborTrafficNodes() {
+    public synchronized void registerOnNeighborTrafficNodes() {
         //this.trafficNodeInvokeStub.signInTrafficNode(ITrafficNode.class.getName(), this.uuid, , );
     }
 
@@ -258,13 +264,13 @@ public class TrafficNode implements ITrafficNode {
         }
     }
 
-    private void drive(String trafficUserUUID) {
+    private synchronized void drive(String trafficUserUUID, double tempo) {
         if (!(Math.abs(this.trafficUserMap.get(trafficUserUUID).getTempo() - 16) < 1)) {
-            this.trafficNodeInvokeStub.setTempo(ITrafficUser.class.getName() + "/" + trafficUserUUID, 16);
+            this.trafficNodeInvokeStub.setTempo(ITrafficUser.class.getName() + "/" + trafficUserUUID, tempo);
         }
     }
 
-    private void stop(String trafficUserUUID) {
+    private synchronized void stop(String trafficUserUUID) {
         if (Math.abs(this.trafficUserMap.get(trafficUserUUID).getTempo() - 0) < 1) {
             this.trafficNodeInvokeStub.setTempo(ITrafficUser.class.getName() + "/" + trafficUserUUID, 0);
         }
