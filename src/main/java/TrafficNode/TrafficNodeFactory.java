@@ -2,17 +2,14 @@ package TrafficNode;
 
 import ComModule.Middleware;
 import ComModule.SkeletonStub;
+import Config.ConfigFile;
 import Config.LogFormatter;
-import TrafficUser.TrafficUserFactory;
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -28,7 +25,7 @@ public class TrafficNodeFactory {
     private final Integer qos;
 
     public static void main(String[] args) {
-        Logger.getGlobal().getParent().getHandlers()[0].setLevel(Level.WARNING);
+        Logger.getGlobal().getParent().getHandlers()[0].setLevel(ConfigFile.LOGGER_LEVEL);
         Logger.getGlobal().getParent().getHandlers()[0].setFormatter(new LogFormatter());
         String uuid = UUID.randomUUID().toString();
         if (args.length > 0) {
@@ -57,8 +54,8 @@ public class TrafficNodeFactory {
         double distance = 0;
         double weight = 0;
         boolean isDefault = false;
-        ConcurrentMap<String, NeighborNodes> neighborNodesGoing = new ConcurrentHashMap<>();
-        ConcurrentMap<String, NeighborNodes> neighborNodesComing = new ConcurrentHashMap<>();
+        ConcurrentMap<String, Street> neighborNodesGoing = new ConcurrentHashMap<>();
+        ConcurrentMap<String, Street> neighborNodesComing = new ConcurrentHashMap<>();
 
         this.retain = false;
         this.qos = 0;
@@ -69,9 +66,9 @@ public class TrafficNodeFactory {
         // Build InvokeStub
         this.trafficNodeInvoke = new TrafficNodeInvokeStub(this.middleware);
 
-        for (int i = 0; i < streets.length; i++) {
+        for (String street : streets) {
             try {
-                Reader reader = Files.newBufferedReader(Paths.get("src/main/java/Config/" + streets[i]));
+                Reader reader = Files.newBufferedReader(Paths.get("src/main/java/Config/" + street));
 
                 JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
                 sourceUUID = (String) parser.get("sourceUUID");
@@ -84,9 +81,9 @@ public class TrafficNodeFactory {
             }
 
             if (sourceUUID.equals(uuid)) {
-                neighborNodesGoing.put(destinationUUID, new NeighborNodes(uuid, this.trafficNodeInvoke, distance, weight, isDefault, sourceUUID, destinationUUID));
+                neighborNodesGoing.put(destinationUUID, new Street(uuid, this.trafficNodeInvoke, distance, weight, isDefault, sourceUUID, destinationUUID, false));
             } else {
-                neighborNodesComing.put(sourceUUID, new NeighborNodes(uuid, this.trafficNodeInvoke, distance, weight, isDefault, sourceUUID, destinationUUID));
+                neighborNodesComing.put(sourceUUID, new Street(uuid, this.trafficNodeInvoke, distance, weight, isDefault, sourceUUID, destinationUUID, true));
             }
 
         }

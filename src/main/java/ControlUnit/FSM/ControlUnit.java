@@ -1,19 +1,17 @@
 package ControlUnit.FSM;
 
 import Config.ConfigFile;
-import TrafficNode.NeighborNodes;
-import TrafficNode.TrafficNodeInvokeStub;
+import TrafficNode.Street;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 public class ControlUnit {
     private final Logger logger = Logger.getGlobal();
 
-    private ConcurrentMap<String, NeighborNodes> trafficNodesComing;
+    private ConcurrentMap<String, Street> trafficNodesComing;
 
-    public ControlUnit(ConcurrentMap<String, NeighborNodes> trafficNodesComing) {
+    public ControlUnit(ConcurrentMap<String, Street> trafficNodesComing) {
         this.trafficNodesComing = trafficNodesComing;
         this.run();
     }
@@ -23,11 +21,11 @@ public class ControlUnit {
 
         new Thread(() -> {
 
-            NeighborNodes [] neighborNodes = this.trafficNodesComing.values().toArray(new NeighborNodes[0]);
+            Street[] neighborNodes = this.trafficNodesComing.values().toArray(new Street[0]);
             int counter = 0;
             int nextHasPriority = -1;
             boolean nextHasTrafficUser = true;
-            NeighborNodes greenNode = this.trafficNodesComing.values().iterator().next();
+            Street greenNode = this.trafficNodesComing.values().iterator().next();
 
 
             while (true) {

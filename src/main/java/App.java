@@ -49,11 +49,12 @@ public class App {
         new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N6", "StreetN6_N7.json", "StreetN4_N6.json", "StreetN5_N6.json")).start();
         sleep(STARTUP_DELAY);
         new Thread(() -> this.buildProcess(TrafficNodeFactory.class.getName(), "N7", "StreetN7_N1.json", "StreetN6_N7.json", "StreetN5_N7.json")).start();
+        sleep(STARTUP_DELAY);
 
         for (int i = 0; i < 100; i++) {
             int finalI = i;
             new Thread(() -> this.buildProcess(TrafficUserFactory.class.getName(), "" + finalI)).start();
-            sleep(STARTUP_DELAY);
+            sleep((long)(STARTUP_DELAY * Math.random() + 1000));
         }
         logger.severe("All processes are running");
     }

@@ -29,9 +29,9 @@ public class MqttReceive {
         }
         MqttConnectOptions options = new MqttConnectOptions();
         options.setAutomaticReconnect(true);
-        options.setCleanSession(true);
+        options.setCleanSession(false);
         options.setConnectionTimeout(10);
-        options.setMaxInflight(10);
+        options.setMaxInflight(1);
         logger.info("listen on: " + this.topic);
         publisher.setCallback(new MqttCallback() {
             @Override

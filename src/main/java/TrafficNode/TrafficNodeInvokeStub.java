@@ -75,4 +75,11 @@ public class TrafficNodeInvokeStub implements ITrafficNodeInvoke {
         this.frontendClientStub.publishVisualizationData(msg);
     }
 
+    public void signInTrafficUser(String targetName, String networkString, String trafficUserUUID) {
+        if (this.trafficNodeService == null || !this.oldTargetName.equals(targetName)) {
+            this.trafficNodeService = new TrafficNodeClientStub(this.middleware, targetName);
+            this.oldTargetName = targetName;
+        }
+        this.trafficNodeService.signInTrafficUser(trafficUserUUID, networkString);
+    }
 }

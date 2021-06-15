@@ -15,7 +15,7 @@ public class TrafficUser implements ITrafficUser {
     private String lastTrafficNode;
     private String nextTrafficNode;
     private String finalTrafficNode;
-    private TrafficUserInvokeStub trafficUserInvokeStub;
+    private final TrafficUserInvokeStub trafficUserInvokeStub;
     private long timer;
 
     private int redCounter;
@@ -37,46 +37,42 @@ public class TrafficUser implements ITrafficUser {
     private void test() {
         this.nextTrafficNode = "N1";
         this.signIn();
-
-        new Thread(() -> {
-            while (true) {
-                this.setTempo(this.tempo);
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+        this.setTempo(this.tempo);
 
 
     }
 
-    public synchronized void signIn() {
+    public void signIn() {
         if (this.nextTrafficNode.equalsIgnoreCase("n1")) {
             this.timer = System.currentTimeMillis();
+            this.redCounter = 0;
         }
         this.trafficUserInvokeStub.signInTrafficUser(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid, this.getNetworkString());
     }
 
-    public synchronized void signOut() {
+    public void signOut() {
         if (this.nextTrafficNode.equalsIgnoreCase("n7")) {
             this.timer = System.currentTimeMillis() - this.timer;
-            logger.severe("Zeit: " + this.timer + " Priorität: " + this.priority.toString() + " RedCounter: " + this.redCounter);
-            this.trafficUserInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/time", "" + (this.timer / 1000) );
+            logger.severe("Zeit: " + this.timer + " Priorität: " + this.priority.toString() + " RedCounter: " + this.redCounter + " user: " + this.uuid);
+            this.trafficUserInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/time", "" + (this.timer / 1000));
             this.trafficUserInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/stops", "" + this.redCounter);
         }
         this.trafficUserInvokeStub.signOutTrafficUser(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid);
     }
 
     @Override
-    public synchronized void setTempo(double tempo) {
-        this.tempo = tempo;
-        if ( Math.abs(tempo - 0) < 0.01) {
-            this.redCounter ++;
+    public void setTempo(double tempo) {
+        if (!(Math.abs(tempo - this.tempo) < 0.1)) {
+
+            if (Math.abs(tempo - 0) < 0.01) {
+                this.redCounter++;
+                //logger.warning("Speed 0 : " + tempo + " of " + this.uuid);
+            }
+            logger.warning("OldSpeed : " + this.tempo + " new Speed: " + tempo + " of " + this.uuid);
+            this.tempo = tempo;
+            this.trafficUserInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/speed", "" + this.tempo);
+            this.trafficUserInvokeStub.setTempo(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid, this.tempo);
         }
-        this.trafficUserInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/speed", "" + this.tempo);
-        this.trafficUserInvokeStub.setTempo(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid, this.tempo);
     }
 
     @Override
@@ -84,7 +80,7 @@ public class TrafficUser implements ITrafficUser {
         System.out.println("Build Emergency Corridor");
     }
 
-    public synchronized String getNetworkString() {
+    public String getNetworkString() {
         String result = "";
         result += this.uuid;
         result += ConfigFile.SEPARATOR_NETWORK_CONCAT;
@@ -109,12 +105,14 @@ public class TrafficUser implements ITrafficUser {
     }
 
     @Override
-    public synchronized void setNextTrafficNode(String trafficNodeUUID) {
-        logger.info(this.uuid + " set new Goal " + trafficNodeUUID);
+    public void setNextTrafficNode(String trafficNodeUUID) {
+        logger.finest(this.uuid + " set new Goal " + trafficNodeUUID);
         if (!this.nextTrafficNode.equalsIgnoreCase(trafficNodeUUID)) {
+            logger.info(this.uuid + " signOut at " + this.nextTrafficNode);
             this.signOut();
             this.lastTrafficNode = this.nextTrafficNode;
             this.nextTrafficNode = trafficNodeUUID;
+            logger.info(this.uuid + " signIn at " + trafficNodeUUID);
             this.signIn();
         }
     }

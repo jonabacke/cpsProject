@@ -3,9 +3,12 @@ package TrafficNode;
 import Config.ConfigFile;
 import Config.EPriority;
 
+import java.util.logging.Logger;
+
 
 public class TrafficUserMock {
 
+    private final Logger logger = Logger.getGlobal();
     private double tempo;
     private EPriority priority;
     private String uuid;
@@ -14,7 +17,7 @@ public class TrafficUserMock {
     private long arriveTime;
     private String lastTrafficNode;
     private double distance;
-    private double lastDistanceTime;
+    private long lastTimeStamp;
 
     public TrafficUserMock(double tempo, EPriority priority, String uuid, String trafficNode, String finalTrafficNode, String lastTrafficNode) {
         this.tempo = tempo;
@@ -23,9 +26,9 @@ public class TrafficUserMock {
         nextTrafficNode = trafficNode;
         this.finalTrafficNode = finalTrafficNode;
         this.arriveTime = System.currentTimeMillis();
-        this.lastDistanceTime = System.currentTimeMillis() / 1000;
         this.lastTrafficNode = lastTrafficNode;
         this.distance = 0;
+        this.lastTimeStamp = System.currentTimeMillis();
     }
 
     public TrafficUserMock(String networkString) {
@@ -33,7 +36,6 @@ public class TrafficUserMock {
         if (networkStrings.length > 4) {
             this.distance = 0;
             this.arriveTime = System.currentTimeMillis();
-            this.lastDistanceTime = System.currentTimeMillis() / 1000;
             this.uuid = networkStrings[0];
             this.tempo = Double.parseDouble(networkStrings[1]);
             this.priority = EPriority.valueOf(networkStrings[2]);
@@ -43,6 +45,7 @@ public class TrafficUserMock {
         if (networkStrings.length == 6) {
             this.finalTrafficNode = networkStrings[5];
         }
+        this.lastTimeStamp = System.currentTimeMillis();
     }
 
     public double getTempo() {
@@ -97,16 +100,16 @@ public class TrafficUserMock {
         }
     }
 
-    public double getTimeOnStreetInSec() {
-        return (double) (System.currentTimeMillis() - this.getArriveTime()) / 1000;
-    }
-
     public double getDistance() {
-        return distance;
+        logger.finest("distance: " + this.distance);
+        return this.distance;
     }
 
     public void refreshDistance() {
-        this.distance = this.tempo * this.getTimeOnStreetInSec();
-        this.lastDistanceTime = (double) System.currentTimeMillis() / 1000;
+
+        this.distance = this.distance + this.tempo * (System.currentTimeMillis() - this.lastTimeStamp) / 1000;
+        this.lastTimeStamp = System.currentTimeMillis();
+        logger.finest("distance: " + this.distance);
+        logger.finest("tempo: " + this.tempo);
     }
 }

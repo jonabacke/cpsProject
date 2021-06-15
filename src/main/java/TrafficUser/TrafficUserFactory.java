@@ -2,6 +2,7 @@ package TrafficUser;
 
 import ComModule.Middleware;
 import ComModule.SkeletonStub;
+import Config.ConfigFile;
 import Config.EPriority;
 import Config.LogFormatter;
 
@@ -15,11 +16,10 @@ public class TrafficUserFactory {
     private final Integer qos;
 
     public static void main(String[] args) {
-        Logger.getGlobal().getParent().getHandlers()[0].setLevel(Level.
-                WARNING);
+        Logger.getGlobal().getParent().getHandlers()[0].setLevel(ConfigFile.LOGGER_LEVEL);
         Logger.getGlobal().getParent().getHandlers()[0].setFormatter(new LogFormatter());
         EPriority prio;
-        if (Math.random() < 0.1) {
+        if (Math.random() < 0.05) {
             prio = EPriority.EMERGENCY;
         } else {
             prio = EPriority.NORMAL;
