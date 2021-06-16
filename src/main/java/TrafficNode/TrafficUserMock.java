@@ -92,6 +92,10 @@ public class TrafficUserMock {
         return arriveTime;
     }
 
+    public void setLastTrafficNode(String lastTrafficNode) {
+        this.lastTrafficNode = lastTrafficNode;
+    }
+
     public String getLastTrafficNode() {
         if (this.lastTrafficNode.equalsIgnoreCase("")) {
             return "N7";

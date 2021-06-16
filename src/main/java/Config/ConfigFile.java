@@ -24,7 +24,7 @@ public class ConfigFile {
     public final static String NORMAL_MESSAGE = "NORMAL";
     public final static String PRIO_MESSAGE = "PRIO";
     public final static Level LOGGER_LEVEL = Level.SEVERE;
-    public static final boolean IS_OPTIMIZED = true;
+    public static final boolean IS_OPTIMIZED = false;
 
 
 }

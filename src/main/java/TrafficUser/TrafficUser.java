@@ -54,8 +54,13 @@ public class TrafficUser implements ITrafficUser {
         if (this.nextTrafficNode.equalsIgnoreCase("n7")) {
             this.timer = System.currentTimeMillis() - this.timer;
             logger.severe("Zeit: " + this.timer + " Priorität: " + this.priority.toString() + " RedCounter: " + this.redCounter + " user: " + this.uuid);
-            this.trafficUserInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/time", "" + (this.timer / 1000));
-            this.trafficUserInvokeStub.publishVisualizationData("frontend/" + this.uuid + "/stops", "" + this.redCounter);
+            if (this.priority.equals(EPriority.EMERGENCY)) {
+                this.trafficUserInvokeStub.publishVisualizationData("frontend" + "/prio" + "/time", "" + (double)(this.timer / 1000));
+                this.trafficUserInvokeStub.publishVisualizationData("frontend" + "/prio" + "/stops", "" + this.redCounter);
+            } else {
+                this.trafficUserInvokeStub.publishVisualizationData("frontend" + "/norm" + "/time", "" + (double)(this.timer / 1000));
+                this.trafficUserInvokeStub.publishVisualizationData("frontend" + "/norm" + "/stops", "" + this.redCounter);
+            }
         }
         this.trafficUserInvokeStub.signOutTrafficUser(ITrafficNode.class.getName() + "/" + this.nextTrafficNode, this.uuid);
     }

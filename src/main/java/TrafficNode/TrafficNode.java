@@ -151,15 +151,24 @@ public class TrafficNode implements ITrafficNode {
 
         TrafficUserMock trafficUser = new TrafficUserMock(trafficUserNetworkString);
 
-        this.userLock.lock();
-        this.trafficUserMap.put(trafficUserUUID, trafficUser);
 
         logger.info(trafficUser.getLastTrafficNode());
         if (this.trafficNodesComing.get(trafficUser.getLastTrafficNode()) == null) {
             logger.severe("TrafficUser: " + trafficUserNetworkString + " node: " + this.uuid + " next: " + trafficUser.getNextTrafficNode());
-            this.trafficNodeInvokeStub.signInTrafficUser(ITrafficNode.class.getName() + "/" + trafficUser.getLastTrafficNode(), trafficUserUUID, trafficUserNetworkString);
+            this.trafficNodeInvokeStub.setNextTrafficNode(ITrafficNode.class.getName() + "/" + trafficUser.getUuid(), this.uuid);
+            /**
+            if (this.trafficNodesComing.get(trafficUser.getNextTrafficNode()) != null) {
+                trafficUser.setLastTrafficNode(trafficUser.getNextTrafficNode());
+                trafficUser.setNextTrafficNode(this.uuid);
+            }
+             */
             throw new NullPointerException();
         }
+
+
+        this.userLock.lock();
+        this.trafficUserMap.put(trafficUserUUID, trafficUser);
+
         if (this.trafficUserMap.get(trafficUserUUID).getPriority().equals(EPriority.EMERGENCY)) {
             this.trafficNodesComing.get(trafficUser.getLastTrafficNode()).setPriority(trafficUser.getTempo());
         }
